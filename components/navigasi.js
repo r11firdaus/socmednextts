@@ -9,9 +9,9 @@ const Navigasi = () => {
     token && websocket();
   }, [])
 
-  const logout = () => {
+  const logout = async () => {
       localStorage.clear()
-      Router.push('login')
+      Router.push('/login')
   }
   
   return (

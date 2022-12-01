@@ -1,5 +1,6 @@
 import Link from "next/link"
 import Router from "next/router"
+import { setData } from "../lib/dataStore"
 
 const LogiForm = (props) => {
   const submit = async (e) => {
@@ -19,9 +20,9 @@ const LogiForm = (props) => {
 
     const data = await res.json()
     if (res.status === 200) {
-      localStorage.setItem('token', data.data.token)
-      localStorage.setItem('email', data.data.email)
-      localStorage.setItem('user_id', data.data.id)
+      setData('token', data.data.token)
+      setData('email', data.data.email)
+      setData('user_id', `${data.data.id}`)
       Router.push('/')
     }
   }
