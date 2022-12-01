@@ -1,11 +1,12 @@
 import Router from "next/router"
 import { memo, useEffect } from "react"
 import websocket from '../lib/actioncable'
+import { getData } from '../lib/dataStore'
 
 const Navigasi = () => {
   useEffect(() => {
     console.log('nav mounted')
-    const token = localStorage.getItem('token');
+    const token = getData('token');
     token && websocket();
   }, [])
 
