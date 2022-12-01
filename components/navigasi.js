@@ -1,4 +1,6 @@
+import Router from "next/router"
 import { memo, useEffect } from "react"
+import websocket from '../lib/actioncable'
 
 const Navigasi = () => {
   useEffect(() => {
@@ -6,9 +8,27 @@ const Navigasi = () => {
     const token = localStorage.getItem('token');
     token && websocket();
   }, [])
+
+  const logout = () => {
+      localStorage.clear()
+      Router.push('login')
+  }
   
   return (
-    <div>Navigasi</div>
+    <>
+      <nav className="navbar navbar-dark bg-dark fixed-top">
+        <div className="container row mx-auto">
+          <a className="navbar-brand col-sm-2" href="#">MeSo</a>
+          <div className="col-sm-8 d-flex justify-content-evenly text-light text-center" href="#">
+          <div className="col"><a href="#">Home</a></div>
+          <div className="col"><a href="#">Posts</a></div>
+          <div className="col"><a href="#">Trending</a></div>
+          <div className="col"><a href="#">Shop</a></div>
+          <div className="col"><a href="#" onClick={() => logout()}>logout</a></div>
+          </div>
+        </div>
+      </nav>
+    </>
   )
 }
 
