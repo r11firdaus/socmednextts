@@ -1,9 +1,12 @@
 import Link from "next/link"
 import Router from "next/router"
+import { useState } from "react"
 import { setData } from "../lib/dataStore"
 
 const LogiForm = (props) => {
+  const [loading, setloading] = useState(false)
   const submit = async (e) => {
+    setloading(true)
     e.preventDefault()
 
     const email = document.getElementById('email').value
@@ -25,6 +28,7 @@ const LogiForm = (props) => {
       setData('user_id', `${data.data.id}`)
       Router.push('/')
     }
+    setloading(false)
   }
 
   return (
@@ -42,7 +46,10 @@ const LogiForm = (props) => {
             </div>
             <p className="small"><a className="text-light" href="forget-password.html">Forgot password?</a></p>
             <div className="d-grid">
-              <button className="btn btn-success" type="submit">{props.type === 'login' ? 'Login' : 'Signup'}</button>
+              {!loading ? 
+                <button className="btn btn-success" type="submit">{props.type === 'login' ? 'Login' : 'Signup'}</button> :
+                <a className="btn btn-secondary" href="#">please wait...</a>
+              }
             </div>
         </form>
         <div className="mt-3">
