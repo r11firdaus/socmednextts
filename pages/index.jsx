@@ -1,4 +1,5 @@
 import Head from 'next/head'
+import Link from 'next/link'
 import { useEffect, useState } from 'react'
 import Alert from '../components/alert'
 import { getData } from '../lib/dataStore'
@@ -80,10 +81,11 @@ export default function Home() {
         <div className="container-fuid my-3">
           {
             posts.map(e => (
-              <div className="card my-2" key={e.id}>
+              <div className="card my-2 border border-light bg-dark text-light" key={e.id}>
                 <div className="card-body">
                   <strong>{e.email}</strong>
                   <p>{e.content}</p>
+                  <div className="position-absolute bottom-0 end-0 px-2 py-2"><Link href={`/post/${e.id}`}>Comments</Link></div>
                 </div>
             </div>
             ))
