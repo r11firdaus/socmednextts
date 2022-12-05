@@ -1,14 +1,13 @@
 import Link from "next/link"
 import Router from "next/router"
 import { memo, useEffect } from "react"
-import websocket from '../lib/actioncable'
+import ChatsChannel from '../lib/websocket/chats_channel'
 import { getData } from '../lib/dataStore'
 
 const Navigasi = () => {
   useEffect(() => {
-    console.log('nav mounted')
     const token = getData('token');
-    token && websocket();
+    token && ChatsChannel();
   }, [])
 
   const logout = async () => {

@@ -1,5 +1,8 @@
+import dynamic from 'next/dynamic'
 import { useEffect, useState } from 'react'
 import { getData } from '../../lib/dataStore'
+
+const CommentsCard = dynamic(import("../../components/commentsCard"), {ssr: false})
 
 export const getServerSideProps = async (ctx) => {
   const { query } = ctx
@@ -59,10 +62,10 @@ const postDetail = (props) => {
       let resJson = await res.json()
       postText.value = ''
       // dipake buat comment
-      let cloneComments = [...comments]
-      resJson.data['email'] = await getData('email')
-      cloneComments.push(resJson.data)
-      setcomments(cloneComments)
+      // let cloneComments = [...comments]
+      // resJson.data['email'] = await getData('email')
+      // cloneComments.push(resJson.data)
+      // setcomments(cloneComments)
     }
   }
 
@@ -74,25 +77,17 @@ const postDetail = (props) => {
       </div>
 
       <div className="pl-3 py-3"><h5>Comments</h5></div>
-      <div className="container">
-        { comments.map(e => (
-          <div className="card border-secondary bg-dark" key={e.id}>
-            <div className="card-body">
-              <strong>{e.email}</strong>
-              <p>{e.content}</p>
-            </div>
-          </div>
-        )) }
-      </div>
+      
+      <CommentsCard comments={comments} post_id={data.id} />
 
       <div className="row my-3">
-          <div className="col-8">
-            <textarea className="form-control" placeholder="Just write" id="postText" />
-          </div>
-          <div className="col-4">
-            <button className="form-control btn btn-success" onClick={(e) => sendComment(e)}>Send</button>
-          </div>
+        <div className="col-8">
+          <textarea className="form-control" placeholder="Just write" id="postText" />
         </div>
+        <div className="col-4">
+          <button className="form-control btn btn-success" onClick={(e) => sendComment(e)}>Send</button>
+        </div>
+      </div>
     </div>
   )
 }
