@@ -23,7 +23,7 @@ const Navigasi = () => {
           <div className="col-sm-8 d-flex justify-content-evenly text-light text-center" href="#">
           <div className="col"><Link href="/">Home</Link></div>
           <div className="col"><a href="#">Profile</a></div>
-          <div className="col"><a href="#">Chats</a></div>
+          <div className="col"><Link href="/chats">Chats</Link></div>
           <div className="col"><a href="#" onClick={() => logout()}>logout</a></div>
           </div>
         </div>
