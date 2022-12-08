@@ -1,3 +1,4 @@
+import Link from "next/link"
 import { useEffect, useState } from "react"
 import { getData } from "../../lib/dataStore"
 
@@ -18,7 +19,7 @@ const index = () => {
       if (res.status == 200) {
         const data = await res.json()
         let newChats = []
-        data.data.map(e => newChats.push(e[e.length-1]))
+        data.data.map(e => newChats.push(e[0]))
         setchats(newChats)
         console.log(data)
       }
@@ -30,13 +31,15 @@ const index = () => {
     <div className="container mt-5 py-5 text-light">
       <ol className="list-group">
         {chats?.map((e) => (
-          <li className="list-group-item d-flex justify-content-between align-items-start bg-dark text-light" key={e.id}>
-            <div className="ms-2 me-auto">
-              <div className="fw-bold">{e.opponent}</div>
-              {e.content}
-            </div>
-            <span className="badge bg-primary rounded-pill">14</span>
-          </li>
+          <Link href={`/chats/${e.unique_id}`} key={e.id}>
+            <li className="list-group-item d-flex justify-content-between align-items-start bg-dark text-light">
+              <div className="ms-2 me-auto">
+                <div className="fw-bold">{e.opponent}</div>
+                {e.content}
+              </div>
+              <span className="badge bg-primary rounded-pill">14</span>
+            </li>
+          </Link>
         ))}
       </ol>
     </div>

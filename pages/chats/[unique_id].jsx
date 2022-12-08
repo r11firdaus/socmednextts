@@ -18,7 +18,7 @@ const chatDetail = (props) => {
     if (getUserId) {
       setuser_id(getUserId)
       async function fetchData () {
-        const res = await fetch(`http://localhost:4000/api/v1/chats/${unique_id}`, {
+        const res = await fetch(`http://localhost:4000/api/v1/messages/${unique_id}`, {
           method: 'GET',
           headers: {
             'Content-Type': 'application/json'
