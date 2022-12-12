@@ -1,86 +1,72 @@
-import { useEffect, useState } from 'react'
+import { useEffect, useState, memo } from 'react'
 import { getData } from '../../lib/dataStore'
+import dynamic from 'next/dynamic'
+import loadMessage from '../../lib/loadData/loadMessage'
+import saveMessage from '../../lib/saveData/saveMessage'
+import { useSelector } from 'react-redux'
+import { postAPI } from '../../lib/callAPI'
+
+const Bubble = dynamic(() => import('../../components/message/bubble'), {ssr: false})
 
 export const getServerSideProps = async (ctx) => {
   const { query } = ctx
   const unique_id = query.unique_id
+  const user_id = getData('user_id', 0, ctx)
+  const token = getData('token', 0, ctx)
 
-  return {props: {unique_id}}
+  const pisahIdUser = unique_id.split('+')
+  let chkId = []
+  pisahIdUser.map(id => user_id == parseInt(id) && chkId.push(id))
+  if (chkId.length < 1 && !token) ctx.res.writeHead(302, {location: '/chats'}).end()
+
+  return {
+    props: { unique_id, user_id, token }
+  }
 }
 
 const chatDetail = (props) => {
   const [messages, setmessages] = useState([])
-  const [user_id, setuser_id] = useState(null)
   const [unique_id, setunique_id] = useState(props.unique_id)
+  const { isOnline, newWSMessage } = useSelector((state) => state)
 
-  useEffect(() => {
-    const getUserId = getData('user_id')
-    if (getUserId) {
-      setuser_id(getUserId)
-      async function fetchData () {
-        const res = await fetch(`http://localhost:4000/api/v1/messages/${unique_id}`, {
-          method: 'GET',
-          headers: {
-            'Content-Type': 'application/json'
-          }
-        })
-        if (res.status == 200) {
-          const resJson = await res.json()
-          setunique_id(resJson.unique_id)
-          resJson.data.length > 0 && setmessages(resJson.data)
-        }
-      }
-      fetchData()
-    } else {
-    }
-  }, [])
+  useEffect(() => { 
+    setTimeout(() => {
+      isOnline && fetchData()
+    }, 1000);
+  }, [isOnline, newWSMessage])
   
   const sendHandler = async (e) => {
     e.preventDefault()
-    let receiver_id = unique_id.split('+').filter(e => e != user_id)[0]
+    let receiver_id = unique_id.split('+').filter(e => e != props.user_id)[0]
     const postText = document.getElementById('msg-input')
 
-    const res = await fetch(`http://localhost:4000/api/v1/messages`, {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json',
-        'token': await getData('token')
-      },
-      body: JSON.stringify({
-        content: postText.value,
-        user_id,
-        unique_id,
-        receiver_id
-      })
-    })
+    const body = {
+      content: postText.value,
+      user_id: props.user_id,
+      unique_id,
+      receiver_id
+    }
+    const save = await postAPI({path: 'messages', body})
+    save.data && await saveMessage(unique_id, save.data) && fetchData()
+  }
 
-    if (res.status === 200) {
-      let resJson = await res.json()
-      postText.value = ''
-      let cloneMessages = [...messages]
-      cloneMessages.push(resJson.data)
-      setmessages(cloneMessages)
+  const fetchData = async () => {
+    console.warn('load messages')
+    const data = await getData('messages', 1)?.data
+    if (data[unique_id]) setmessages(data[unique_id].reverse())
+    else {
+      const splitUniqueId = unique_id.split('+')
+      const reverseUniqueId = `${splitUniqueId[1]}+${splitUniqueId[0]}`
+      if (data[reverseUniqueId]) {
+        setmessages(data[reverseUniqueId].reverse())
+        setunique_id(reverseUniqueId)
+      }
     }
   }
 
   return (
     <>
-      {messages.length > 0 &&
-        <ul className="row" id={`message_${unique_id}`} style={{ margin: '5rem 2rem 3rem 0', listStyle: 'none' }}>
-            {messages.map((per) => (
-              <div className="col-12" style={{ padding: '0' }} key={per.id}>
-                  {per.user_id == user_id ?
-                    <div className="row d-flex flex-row-reverse">
-                      <li className="col-auto card my-baloon">{per.content}</li>
-                    </div> :
-                    <div className="row">
-                      <li className="col-auto card opponent-baloon">{per.content}</li>
-                    </div>
-                  }
-              </div>
-            ))}
-        </ul>
-      }
+      <Bubble messages={messages} unique_id={unique_id} user_id={props.user_id} token={props.token} />
 
       <form id="form" className="col-lg-offset-3" onSubmit={e => sendHandler(e)}>
         <input id="msg-input" autoComplete="off" />
@@ -88,9 +74,8 @@ const chatDetail = (props) => {
       </form>
       <style jsx>
         {`
-        #form { background: white; padding: 0.25rem; position: fixed; bottom: 0; left: 0; right: 0; display: flex; height: 3rem; box-sizing: border-box; backdrop-filter: blur(10px); }
-        #msg-input { border: 1px solid #4b3832; padding: 0 1rem; flex-grow: 1; border-radius: 2rem; margin: 0.25rem; }
-        #msg-input { outline: none; }
+        #form { padding: 0.25rem; position: fixed; bottom: 0; left: 0; right: 0; display: flex; height: 3rem; box-sizing: border-box; backdrop-filter: blur(10px); }
+        #msg-input { outline: none; border: 1px solid #4b3832; padding: 0 1rem; flex-grow: 1; border-radius: 2rem; margin: 0.25rem; }
         #form > button { background: #333; border: none; padding: 0 1rem; border-radius: 3px; outline: none; color: #fff; }
       `}
       </style>
@@ -98,4 +83,4 @@ const chatDetail = (props) => {
   )
 }
 
-export default chatDetail
+export default memo(chatDetail)

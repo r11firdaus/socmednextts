@@ -23,9 +23,9 @@ const LogiForm = (props) => {
 
     const data = await res.json()
     if (res.status === 200) {
-      setData('token', data.data.token)
-      setData('email', data.data.email)
-      setData('user_id', `${data.data.id}`)
+      setData('token', data.data.token, 0)
+      setData('email', data.data.email, 0)
+      setData('user_id', data.data.id, 0)
       Router.push('/')
     }
     setloading(false)

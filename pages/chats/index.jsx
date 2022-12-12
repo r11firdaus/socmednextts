@@ -1,31 +1,27 @@
 import Link from "next/link"
 import { useEffect, useState } from "react"
+import { useSelector } from "react-redux"
 import { getData } from "../../lib/dataStore"
 
 const index = () => {
   const [chats, setchats] = useState([])
+  const { isOnline, newWSMessage } = useSelector((state) => state)
 
   useEffect(() => {
-    async function fetchData() {
-      const user_id = await getData('user_id')
-      const res = await fetch(`http://localhost:4000/api/v1/messages?user_id=${user_id}`, {
-        method: 'GET',
-        headers: {
-          'Content-Type': 'application/json',
-          'token': await getData('token')
-        }
-      })
+    setTimeout(() => {
+      isOnline && fetchData()
+    }, 1000);
+  }, [isOnline, newWSMessage])
 
-      if (res.status == 200) {
-        const data = await res.json()
-        let newChats = []
-        data.data.map(e => newChats.push(e[0]))
-        setchats(newChats)
-        console.log(data)
-      }
+  const fetchData = async () => {
+    const data = await getData('messages', 1)
+
+    let newChats = []
+    for (var key in data.data) {
+      if (data.data.hasOwnProperty(key)) newChats.push(data.data[key][0])
     }
-    fetchData()
-  }, [])
+    setchats(newChats)
+  }
   
   return (
     <div className="container mt-5 py-5 text-light">

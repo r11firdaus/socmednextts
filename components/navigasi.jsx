@@ -1,14 +1,25 @@
 import Link from "next/link"
 import Router from "next/router"
 import { memo, useEffect } from "react"
-import ChatsChannel from '../lib/websocket/chats_channel'
-import { getData } from '../lib/dataStore'
+import { useDispatch, useSelector } from "react-redux"
+import { getData } from "../lib/dataStore"
+import loadMessage from "../lib/loadData/loadMessage"
+import ChatsChannel from "../lib/websocket/chats_channel"
+import saveMessage from '../lib/saveData/saveMessage'
 
 const Navigasi = () => {
+  const dispatch = useDispatch()
+  const { isOnline, newWSMessage } = useSelector((state) => state)
+  
   useEffect(() => {
-    const token = getData('token');
-    token && ChatsChannel();
-  }, [])
+    const token = getData('token', 0)
+    token && !isOnline && ChatsChannel(dispatch, isOnline)
+    setTimeout(async () => {
+      const user_id = getData('user_id', 0)
+      isOnline && await loadMessage(user_id)
+      console.log('internet: '+isOnline)
+    }, 500);
+  }, [isOnline])
 
   const logout = async () => {
       localStorage.clear()
