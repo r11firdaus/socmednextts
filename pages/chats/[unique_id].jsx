@@ -1,7 +1,6 @@
 import { useEffect, useState, memo } from 'react'
 import { getData } from '../../lib/dataStore'
 import dynamic from 'next/dynamic'
-import loadMessage from '../../lib/loadData/loadMessage'
 import saveMessage from '../../lib/saveData/saveMessage'
 import { useSelector } from 'react-redux'
 import { postAPI } from '../../lib/callAPI'
@@ -40,14 +39,17 @@ const chatDetail = (props) => {
     let receiver_id = unique_id.split('+').filter(e => e != props.user_id)[0]
     const postText = document.getElementById('msg-input')
 
-    const body = {
-      content: postText.value,
-      user_id: props.user_id,
-      unique_id,
-      receiver_id
+    if (postText.value.trim() !== '') {
+      const body = {
+        content: postText.value,
+        user_id: props.user_id,
+        unique_id,
+        receiver_id
+      }
+      const save = await postAPI({path: 'messages', body})
+      save.data && await saveMessage(unique_id, save.data) && fetchData()
+      postText.value = ''
     }
-    const save = await postAPI({path: 'messages', body})
-    save.data && await saveMessage(unique_id, save.data) && fetchData()
   }
 
   const fetchData = async () => {
