@@ -2,8 +2,8 @@ import { useEffect, useState, memo } from 'react'
 import { getData } from '../../lib/dataStore'
 import dynamic from 'next/dynamic'
 import saveMessage from '../../lib/saveData/saveMessage'
-import { useSelector } from 'react-redux'
 import { postAPI } from '../../lib/callAPI'
+import { useMessageStore, useUserStore } from "../../lib/zustand/store"
 
 const Bubble = dynamic(() => import('../../components/message/bubble'), {ssr: false})
 
@@ -26,13 +26,13 @@ export const getServerSideProps = async (ctx) => {
 const chatDetail = (props) => {
   const [messages, setmessages] = useState([])
   const [unique_id, setunique_id] = useState(props.unique_id)
-  const { isOnline, newWSMessage } = useSelector((state) => state)
 
   useEffect(() => { 
-    setTimeout(() => {
-      isOnline && fetchData()
-    }, 1000);
-  }, [isOnline, newWSMessage])
+    fetchData()
+    useMessageStore.subscribe(state => appendMessage(state.data))
+    useUserStore.subscribe(state => state.isOnline && fetchData())
+    return () => useMessageStore.destroy()
+  }, [])
   
   const sendHandler = async (e) => {
     e.preventDefault()
@@ -47,8 +47,11 @@ const chatDetail = (props) => {
         receiver_id
       }
       const save = await postAPI({path: 'messages', body})
-      save.data && await saveMessage(unique_id, save.data) && fetchData()
-      postText.value = ''
+      if (save.data) {
+        appendMessage(save.data)
+        await saveMessage(unique_id, save.data)
+        postText.value = ''
+      }
     }
   }
 
@@ -64,6 +67,28 @@ const chatDetail = (props) => {
         setunique_id(reverseUniqueId)
       }
     }
+  }
+
+  const appendMessage = (msg) => {
+    const msgUL = document.getElementById(`message_${msg.unique_id}`);
+        if (msgUL) {
+          let element = ''
+          if (msg.user_id == props.user_id) {
+            element = `<div class="col-12" style="padding: 0" key=${msg.id}>
+                        <div class="row d-flex flex-row-reverse">
+                          <li class="col-auto card my-baloon">${msg.content}</li>
+                        </div>
+                      </div>`
+          } else {
+            element = `<div class="col-12" style="padding: 0" key=${msg.id}>
+                        <div class="row d-flex">
+                          <li class="col-auto card opponent-baloon">${msg.content}</li>
+                        </div>
+                      </div>`
+          }
+
+          msgUL.insertAdjacentHTML('beforeend', element)
+        }
   }
 
   return (

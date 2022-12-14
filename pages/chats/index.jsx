@@ -1,26 +1,29 @@
 import Link from "next/link"
 import { useEffect, useState } from "react"
-import { useSelector } from "react-redux"
 import { getData } from "../../lib/dataStore"
+import { useMessageStore, useUserStore } from "../../lib/zustand/store"
 
 const index = () => {
   const [chats, setchats] = useState([])
-  const { isOnline, newWSMessage } = useSelector((state) => state)
 
   useEffect(() => {
-    setTimeout(() => {
-      isOnline && fetchData()
-    }, 1000);
-  }, [isOnline, newWSMessage])
+    fetchData()
+    useMessageStore.subscribe(state => fetchData())
+    useUserStore.subscribe(state => state.isOnline && fetchData())
+    return () => useMessageStore.destroy()
+  }, [])
 
   const fetchData = async () => {
+    console.warn('load messages')
     const data = await getData('messages', 1)
 
-    let newChats = []
-    for (var key in data.data) {
-      if (data.data.hasOwnProperty(key)) newChats.push(data.data[key][0])
+    if (data) {
+      let newChats = []
+      for (var key in data.data) {
+        if (data.data.hasOwnProperty(key)) newChats.push(data.data[key][0])
+      }
+      setchats(newChats)
     }
-    setchats(newChats)
   }
   
   return (
