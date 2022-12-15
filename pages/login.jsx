@@ -1,3 +1,4 @@
+import { memo } from "react"
 import LoginForm from "../components/loginForm"
 const login = () => { 
   return (
@@ -5,4 +6,4 @@ const login = () => {
   )
 }
 
-export default login
+export default memo(login)

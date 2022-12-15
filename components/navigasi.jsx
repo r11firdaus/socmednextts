@@ -1,26 +1,24 @@
 import Link from "next/link"
-import Router from "next/router"
 import { memo, useEffect } from "react"
+import { getData } from "../lib/dataStore"
+import loadMessage from "../lib/loadData/loadMessage"
 import ChatsChannel from "../lib/websocket/chats_channel"
-import { useUserStore } from '../lib/zustand/store'
+import { useAuthStore, useUserStore } from '../lib/zustand/store'
+import SessionNav from './session'
 
 const Navigasi = () => {
   const { isOnline } = useUserStore((state) => state)
 
   useEffect(() => {
+    console.log('navbar loaded')
     !isOnline && ChatsChannel()
-    // useUserStore.subscribe(state => {
-    //   console.log(state.isOnline)
-    // })
+    const user_id = getData('user_id', 0)
+    useAuthStore.subscribe(async(auth) => {
+      auth.isLogin && await loadMessage(user_id)
+    })
     return () => useUserStore.destroy()
   }, [])
-  
-
-  const logout = async () => {
-      localStorage.clear()
-      Router.push('/login')
-  }
-  
+    
   return (
     <>
       <nav className="navbar navbar-dark bg-dark fixed-top">
@@ -30,7 +28,7 @@ const Navigasi = () => {
           <div className="col"><Link href="/">Home</Link></div>
           <div className="col"><a href="#">Profile</a></div>
           <div className="col"><Link href="/chats">Chats</Link></div>
-          <div className="col"><a href="#" onClick={() => logout()}>logout</a></div>
+          <SessionNav />
           </div>
         </div>
       </nav>

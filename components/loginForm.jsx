@@ -1,9 +1,10 @@
 import Link from "next/link"
 import Router from "next/router"
-import { useState } from "react"
+import { memo, useState } from "react"
 import { setData } from "../lib/dataStore"
+import { useAuthStore } from "../lib/zustand/store"
 
-const LogiForm = (props) => {
+const LoginForm = (props) => {
   const [loading, setloading] = useState(false)
   const submit = async (e) => {
     setloading(true)
@@ -26,6 +27,7 @@ const LogiForm = (props) => {
       setData('token', data.data.token, 0)
       setData('email', data.data.email, 0)
       setData('user_id', data.data.id, 0)
+      useAuthStore.setState({isLogin: true})
       Router.push('/')
     }
     setloading(false)
@@ -62,4 +64,4 @@ const LogiForm = (props) => {
   )
 }
 
-export default LogiForm
+export default memo(LoginForm)
