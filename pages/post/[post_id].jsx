@@ -1,6 +1,7 @@
 import dynamic from 'next/dynamic'
 import { useEffect, useState } from 'react'
 import { getData } from '../../lib/dataStore'
+import { getAPI, postAPI } from '../..//lib/callAPI'
 
 const CommentsCard = dynamic(import("../../components/commentsCard"), {ssr: false})
 
@@ -25,17 +26,8 @@ const postDetail = (props) => {
 
   useEffect(() => {
     async function fetchData () {
-      const res = await fetch(`http://localhost:4000/api/v1/comments?post_id=${data.id}`, {
-        method: 'GET',
-        headers: {
-          'Content-Type': 'application/json'
-        }
-      })
-      if (res.status == 200) {
-        const resJson = await res.json()
-        setcomments(resJson.data)
-        console.log(resJson.data)
-      }
+      const comments = await getAPI({ path: `comments?post_id=${data.id}`})
+      comments.data && setcomments(comments.data)
     }
     fetchData()
   }, [])
@@ -44,28 +36,16 @@ const postDetail = (props) => {
     e.preventDefault()
 
     const postText = document.getElementById('postText')
+    const body = {
+      content: postText.value,
+      user_id: await getData('user_id', 0),
+      post_id: data.id
+    }
+    const comment = postAPI({ path: 'comments', body })
 
-    const res = await fetch(`http://localhost:4000/api/v1/comments`, {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json',
-        'token': await getData('token')
-      },
-      body: JSON.stringify({
-        content: postText.value,
-        user_id: await getData('user_id'),
-        post_id: data.id
-      })
-    })
-
-    if (res.status === 200) {
-      let resJson = await res.json()
+    if (comment.data) {
+      let res = comment.data
       postText.value = ''
-      // dipake buat comment
-      // let cloneComments = [...comments]
-      // resJson.data['email'] = await getData('email')
-      // cloneComments.push(resJson.data)
-      // setcomments(cloneComments)
     }
   }
 
