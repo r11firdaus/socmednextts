@@ -58,15 +58,17 @@ const chatDetail = (props) => {
   const fetchData = async () => {
     console.warn('load messages')
     const data = await getData('messages', 1)?.data
-    if (data[unique_id]) setmessages(data[unique_id].reverse())
-    else {
-      const splitUniqueId = unique_id.split('+')
-      const reverseUniqueId = `${splitUniqueId[1]}+${splitUniqueId[0]}`
-      if (data[reverseUniqueId]) {
-        setmessages(data[reverseUniqueId].reverse())
-        setunique_id(reverseUniqueId)
+    data?.map(e => {
+      if (e[unique_id]) setmessages(e[unique_id].reverse())
+      else {
+        const splitUniqueId = unique_id.split('+')
+        const reverseUniqueId = `${splitUniqueId[1]}+${splitUniqueId[0]}`
+        if (e[reverseUniqueId]) {
+          setmessages(e[reverseUniqueId].reverse())
+          setunique_id(reverseUniqueId)
+        }
       }
-    }
+    })
   }
 
   const appendMessage = (msg) => {

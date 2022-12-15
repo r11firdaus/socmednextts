@@ -20,15 +20,17 @@ const index = () => {
     if (data) {
       const user_id = getData('user_id', 0)
       let newChats = []
-      for (var key in data.data) {
-        if (data.data.hasOwnProperty(key)) {
-          let lastMessage = data.data[key][0]
-          let unreadMessages = 0
-          data.data[key].map(e => e.receiver_id == user_id && !e.status && unreadMessages++)
-          lastMessage['unreadMessages'] = unreadMessages
-          newChats.push(lastMessage)
+      data.data.map(e => {
+        for (var key in e) {
+          if (e.hasOwnProperty(key)) {
+            let lastMessage = e[key][0]
+            let unreadMessages = 0
+            e[key].map(e => e.receiver_id == user_id && !e.status && unreadMessages++)
+            lastMessage['unreadMessages'] = unreadMessages
+            newChats.push(lastMessage)
+          }
         }
-      }
+      })
       setchats(newChats)
     }
   }
