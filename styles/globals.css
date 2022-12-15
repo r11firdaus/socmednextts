@@ -16,12 +16,26 @@ a {
   box-sizing: border-box;
 }
 
+.my-baloon {
+  max-width: 70%;
+  background-color: #be9b7b;
+  padding: 10px;
+  margin: 10px;
+  color: white
+}
+
+.opponent-baloon {
+  max-width: 70%;
+  padding: 10px;
+  margin: 10px;
+}
+
 @media (prefers-color-scheme: dark) {
   html {
-    color-scheme: dark;
+/*    color-scheme: dark;*/
   }
   body {
-    color: white;
-    background: black;
+/*    color: white;*/
+/*    background: black;*/
   }
 }
