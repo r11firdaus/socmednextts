@@ -16,11 +16,18 @@ const index = () => {
   const fetchData = async () => {
     console.warn('load messages')
     const data = await getData('messages', 1)
-
+    
     if (data) {
+      const user_id = getData('user_id', 0)
       let newChats = []
       for (var key in data.data) {
-        if (data.data.hasOwnProperty(key)) newChats.push(data.data[key][0])
+        if (data.data.hasOwnProperty(key)) {
+          let lastMessage = data.data[key][0]
+          let unreadMessages = 0
+          data.data[key].map(e => e.receiver_id == user_id && !e.status && unreadMessages++)
+          lastMessage['unreadMessages'] = unreadMessages
+          newChats.push(lastMessage)
+        }
       }
       setchats(newChats)
     }
@@ -36,7 +43,7 @@ const index = () => {
                 <div className="fw-bold">{e.opponent}</div>
                 {e.content}
               </div>
-              <span className="badge bg-primary rounded-pill">14</span>
+              {e.unreadMessages > 0 && <span className="badge bg-primary rounded-pill">{e.unreadMessages}</span>}
             </li>
           </Link>
         ))}
