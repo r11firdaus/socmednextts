@@ -23,6 +23,8 @@ export const getServerSideProps = async (ctx) => {
 const postDetail = (props) => {
   const { data } = props
   const [comments, setcomments] = useState([])
+  const user_id = getData('user_id', 0)
+  const token = getData('token', 0)
 
   useEffect(() => {
     async function fetchData () {
@@ -58,16 +60,19 @@ const postDetail = (props) => {
 
       <div className="pl-3 py-3"><h5>Comments</h5></div>
       
-      <CommentsCard comments={comments} post_id={data.id} />
+      {<CommentsCard comments={comments} post_id={data.id} user_id={user_id} token={token} />}
+      {user_id && token &&
+        <div className="row my-3">
+          <div className="col-8">
+            <textarea className="form-control" placeholder="Just write" id="postText" />
+          </div>
+          <div className="col-4">
+            <button className="form-control btn btn-success" onClick={(e) => sendComment(e)}>Send</button>
+          </div>
+        </div>
+      }
 
-      <div className="row my-3">
-        <div className="col-8">
-          <textarea className="form-control" placeholder="Just write" id="postText" />
-        </div>
-        <div className="col-4">
-          <button className="form-control btn btn-success" onClick={(e) => sendComment(e)}>Send</button>
-        </div>
-      </div>
+      
     </div>
   )
 }

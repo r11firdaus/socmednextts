@@ -8,10 +8,11 @@ import { getData } from '../lib/dataStore'
 export default function Home() {
   const [posts, setposts] = useState([])
   const [alert, setalert] = useState({show: false, status: null, statusText: '', type: ''})
+  const user_id = getData('user_id', 0)
+  const token = getData('token', 0)
 
   useEffect(() => {
     async function fetchData() {
-      const user_id = await getData('user_id', 0)
       const posts = await getAPI({path: `posts${user_id ? '?user_id='+user_id : ''}`})
       posts.data && setposts(posts.data)
     }
@@ -50,14 +51,16 @@ export default function Home() {
         <link rel="icon" href="/favicon.ico" />
       </Head>
         {alert.show && <Alert data={alert} />}
-        <div className="row my-3">
-          <div className="col-8">
-            <textarea className="form-control" placeholder="Just write" id="postText" />
+        {user_id && token &&
+          <div className="row my-3">
+            <div className="col-8">
+              <textarea className="form-control" placeholder="Just write" id="postText" />
+            </div>
+            <div className="col-4">
+              <button className="form-control btn btn-success" onClick={(e) => sendPost(e)}>Send</button>
+            </div>
           </div>
-          <div className="col-4">
-            <button className="form-control btn btn-success" onClick={(e) => sendPost(e)}>Send</button>
-          </div>
-        </div>
+        }
 
         <hr />
         <div className="container-fuid my-3">

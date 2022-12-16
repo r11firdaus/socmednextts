@@ -3,7 +3,7 @@ import CommentsChannel from "../lib/websocket/comments_channel"
 
 const CommentsCard = (props) => {
   useEffect(() => {
-    CommentsChannel()
+    props.user_id && props.token && CommentsChannel()
   }, [])
   
   return (
