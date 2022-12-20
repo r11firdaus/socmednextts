@@ -15,7 +15,7 @@ const SessionNav = () => {
     deleteData('user_id', 0)
     useAuthStore.setState({isLogin: false})
     ChatsChannel.unsubscribe()
-    CommentsChannel.unsubscribe()
+    CommentsChannel(false)
     Router.push('/login')
   }
 
