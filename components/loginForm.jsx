@@ -23,7 +23,7 @@ const LoginForm = (props) => {
       setData('user_id', res.data.id, 0)
       useUserStore.setState({ isOnline: true })
       useAuthStore.setState({ isLogin: true })
-      Router.push('/')
+      location.href = '/'
     }
     setloading(false)
   }
