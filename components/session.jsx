@@ -1,6 +1,8 @@
 import Router from "next/router"
 import { memo } from "react"
 import { deleteData } from "../lib/dataStore"
+import ChatsChannel from "../lib/websocket/chats_channel"
+import CommentsChannel from "../lib/websocket/comments_channel"
 import { useAuthStore } from "../lib/zustand/store"
 
 const SessionNav = () => {
@@ -12,6 +14,8 @@ const SessionNav = () => {
     deleteData('email', 0)
     deleteData('user_id', 0)
     useAuthStore.setState({isLogin: false})
+    ChatsChannel.unsubscribe()
+    CommentsChannel.unsubscribe()
     Router.push('/login')
   }
 

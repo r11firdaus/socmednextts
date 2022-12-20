@@ -21,9 +21,9 @@ const LoginForm = (props) => {
       setData('token', res.data.token, 0)
       setData('email', res.data.email, 0)
       setData('user_id', res.data.id, 0)
+      location.href = '/'
       useUserStore.setState({ isOnline: true })
       useAuthStore.setState({ isLogin: true })
-      location.href = '/'
     }
     setloading(false)
   }

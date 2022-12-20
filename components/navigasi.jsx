@@ -1,9 +1,7 @@
 import Link from "next/link"
 import { memo, useEffect } from "react"
-import { getData } from "../lib/dataStore"
-import loadMessage from "../lib/loadData/loadMessage"
 import ChatsChannel from "../lib/websocket/chats_channel"
-import { useAuthStore, useUserStore } from '../lib/zustand/store'
+import { useUserStore } from '../lib/zustand/store'
 import SessionNav from './session'
 
 const Navigasi = () => {
@@ -11,11 +9,8 @@ const Navigasi = () => {
 
   useEffect(() => {
     console.log('navbar loaded')
-    !isOnline && ChatsChannel()
-    useAuthStore.subscribe(async(auth) => {
-      const user_id = getData('user_id', 0)
-      auth.isLogin && await loadMessage(user_id)
-    })
+    !isOnline && ChatsChannel
+
     return () => useUserStore.destroy()
   }, [])
     
