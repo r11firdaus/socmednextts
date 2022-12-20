@@ -2,7 +2,8 @@ import Link from "next/link"
 import Router from "next/router"
 import { memo, useState } from "react"
 import { setData } from "../lib/dataStore"
-import { useAuthStore } from "../lib/zustand/store"
+import { useAuthStore, useUserStore } from "../lib/zustand/store"
+import { postAPI } from "../lib/callAPI"
 
 const LoginForm = (props) => {
   const [loading, setloading] = useState(false)
@@ -12,22 +13,16 @@ const LoginForm = (props) => {
 
     const email = document.getElementById('email').value
     const password = document.getElementById('password').value
-    const res = await fetch(`http://localhost:4000/api/v1/auth/${props.type === 'login' ? 'login' : 'signup'}`, {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json'
-      },
-      body: JSON.stringify({
-        email, password
-      })
-    })
+    const body = { email, password }
 
-    const data = await res.json()
-    if (res.status === 200) {
-      setData('token', data.data.token, 0)
-      setData('email', data.data.email, 0)
-      setData('user_id', data.data.id, 0)
-      useAuthStore.setState({isLogin: true})
+    const res = await postAPI({ path: `auth/${ props.type === 'login' ? 'login' : 'signup' }`, body })
+
+    if (res.data) {
+      setData('token', res.data.token, 0)
+      setData('email', res.data.email, 0)
+      setData('user_id', res.data.id, 0)
+      useUserStore.setState({ isOnline: true })
+      useAuthStore.setState({ isLogin: true })
       Router.push('/')
     }
     setloading(false)

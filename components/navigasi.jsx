@@ -12,8 +12,8 @@ const Navigasi = () => {
   useEffect(() => {
     console.log('navbar loaded')
     !isOnline && ChatsChannel()
-    const user_id = getData('user_id', 0)
     useAuthStore.subscribe(async(auth) => {
+      const user_id = getData('user_id', 0)
       auth.isLogin && await loadMessage(user_id)
     })
     return () => useUserStore.destroy()
