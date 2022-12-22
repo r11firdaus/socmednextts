@@ -16,7 +16,7 @@ export const getServerSideProps = async (ctx) => {
   const pisahIdUser = unique_id.split('+')
   let chkId = []
   pisahIdUser.map(id => user_id == parseInt(id) && chkId.push(id))
-  if (chkId.length < 1 && !token) ctx.res.writeHead(302, {location: '/chats'}).end()
+  if (chkId.length < 1 || !token) ctx.res.writeHead(302, {location: '/'}).end()
 
   return {
     props: { unique_id, user_id, token }

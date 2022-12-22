@@ -3,6 +3,18 @@ import { useEffect, useState } from "react"
 import { getData } from "../../lib/dataStore"
 import { useMessageStore, useUserStore } from "../../lib/zustand/store"
 
+export const getServerSideProps = async (ctx) => {
+  const { query } = ctx
+  const user_id = getData('user_id', 0, ctx)
+  const token = getData('token', 0, ctx)
+
+  if (!user_id || !token) ctx.res.writeHead(302, {location: '/'}).end()
+
+  return {
+    props: { user_id, token }
+  }
+}
+
 const index = () => {
   const [chats, setchats] = useState([])
 
