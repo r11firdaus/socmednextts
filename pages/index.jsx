@@ -66,7 +66,7 @@ export default function Home() {
         <div className="container-fuid my-3">
           {
             posts.map(e => (
-              <div className="card my-2 border border-light bg-dark text-light" key={e.id}>
+              <div className="card my-2 border border-secondary bg-dark text-light" key={e.id}>
                 <div className="card-body">
                   <strong>{e.email}</strong>
                   <p>{e.content}</p>

@@ -1,5 +1,4 @@
 import Link from "next/link"
-import Router from "next/router"
 import { memo, useState } from "react"
 import { setData } from "../lib/dataStore"
 import { useAuthStore, useUserStore } from "../lib/zustand/store"
@@ -7,6 +6,7 @@ import { postAPI } from "../lib/callAPI"
 
 const LoginForm = (props) => {
   const [loading, setloading] = useState(false)
+  
   const submit = async (e) => {
     setloading(true)
     e.preventDefault()
@@ -30,7 +30,7 @@ const LoginForm = (props) => {
 
   return (
     <div className="vh-100 d-flex justify-content-center">
-      <div className="col p-5 shadow-sm border rounded-3">
+      <div className="col p-5 shadow-sm">
         <h2 className="text-center mb-4 text-light">{props.type === 'login' ? 'Login' : 'Signup'}</h2>
         <form onSubmit={(e) => submit(e)}>
           <div className="mb-3">

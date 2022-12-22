@@ -20,8 +20,8 @@ const SessionNav = () => {
 
   return(<>
     {isLogin ?
-      <div className="col"><a href="#" onClick={() => logout()}>logout</a></div> :
-      <div className="col"><Link href="/login">login</Link></div>
+      <div className="text-light"><a href="#" onClick={() => logout()}>logout</a></div> :
+      <div className="text-light"><Link href="/login">login</Link></div>
     }
   </>)
 }

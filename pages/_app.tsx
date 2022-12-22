@@ -5,7 +5,7 @@ import { useAuthStore } from '../lib/zustand/store'
 import { useEffect, useState } from 'react'
 import { getData } from '../lib/dataStore'
 
-const Navigasi = dynamic(() => import("../components/navigasi"), {ssr: false})
+const Navbar = dynamic(() => import("../components/navbar"), {ssr: false})
 
 export default function App({ Component, pageProps }: AppProps) {
   const [loading, setloading] = useState(true)
@@ -26,7 +26,7 @@ export default function App({ Component, pageProps }: AppProps) {
       {
         loading ? <div className='text-light'>LOADING...</div> :
         <>
-          <Navigasi />
+          <Navbar />
           <Component {...pageProps} />
         </>
       }
