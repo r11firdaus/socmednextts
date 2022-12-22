@@ -1,19 +1,19 @@
 import Head from 'next/head'
-import Link from 'next/link'
 import { useEffect, useState } from 'react'
 import Alert from '../components/alert'
+import Posts from '../components/posts'
 import { getAPI, postAPI } from '../lib/callAPI'
 import { getData } from '../lib/dataStore'
 
 export default function Home() {
   const [posts, setposts] = useState([])
-  const [alert, setalert] = useState({show: false, status: null, statusText: '', type: ''})
+  const [alert, setalert] = useState({ show: false, status: null, statusText: '', type: '' })
   const user_id = getData('user_id', 0)
   const token = getData('token', 0)
 
   useEffect(() => {
     async function fetchData() {
-      const posts = await getAPI({path: `posts${user_id ? '?user_id='+user_id : ''}`})
+      const posts = await getAPI({ path: `posts${user_id ? '?user_id='+user_id : ''}` })
       posts.data && setposts(posts.data)
     }
     fetchData()
@@ -64,17 +64,7 @@ export default function Home() {
 
         <hr />
         <div className="container-fuid my-3">
-          {
-            posts.map(e => (
-              <div className="card my-2 border border-secondary bg-dark text-light" key={e.id}>
-                <div className="card-body">
-                  <strong>{e.email}</strong>
-                  <p>{e.content}</p>
-                  <div className="position-absolute bottom-0 end-0 px-2 py-2"><Link href={`/post/${e.id}`}>Comments</Link></div>
-                </div>
-            </div>
-            ))
-          }
+          { posts.map(e => ( <Posts id={e.id} email={e.email} content={e.content} key={e.id}/> )) }
         </div>
     </div>
   )
