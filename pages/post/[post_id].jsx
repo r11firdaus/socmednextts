@@ -2,6 +2,7 @@ import dynamic from 'next/dynamic'
 import { useEffect, useState } from 'react'
 import { getData } from '../../lib/dataStore'
 import { getAPI, postAPI } from '../..//lib/callAPI'
+import appendComment from "../../components/comment/appendComment"
 
 const CommentsCard = dynamic(import("../../components/commentsCard"), {ssr: false})
 
@@ -50,19 +51,6 @@ const postDetail = (props) => {
       postText.value = ''
       appendComment(data)
     }
-  }
-
-  const appendComment = (data) => {
-    const section = document.getElementById(`sectionComment-${data.post_id}`)
-    const htmlStr = `
-                      <div class="card border-secondary bg-dark" key=${data.id}>
-                        <div class="card-body">
-                          <strong>${data.email}</strong>
-                          <p>${data.content}</p>
-                        </div>
-                      </div>
-                    `
-    section.insertAdjacentHTML('beforeend', htmlStr);
   }
 
   return (
