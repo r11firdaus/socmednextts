@@ -4,6 +4,7 @@ import dynamic from 'next/dynamic'
 import saveMessage from '../../lib/saveData/saveMessage'
 import { getAPI, postAPI } from '../../lib/callAPI'
 import { useMessageStore, useNavStore, useUserStore } from "../../lib/zustand/store"
+import appendMessage from '../../components/message/appendMessage'
 
 const Bubble = dynamic(() => import('../../components/message/bubble'), {ssr: false})
 const MsgNav = dynamic(() => import('../../components/navbar/msgNav'), {ssr: false})
@@ -44,10 +45,10 @@ const chatDetail = (props) => {
         const getOppnent = await getAPI({ path: `users/${props.opponentId}` })
         getOppnent.data && setopponent(getOppnent.data.email)
       }
-      setmessages(msg)
+      msg.length > 0 && setmessages(msg)
     })
-    
-    useMessageStore.subscribe(state => appendMessage(state.data))
+
+    useMessageStore.subscribe(state => appendMessage(state.data, props.user_id))
     useUserStore.subscribe(state => state.isOnline && fetchData())
     
     return () => {
@@ -71,7 +72,7 @@ const chatDetail = (props) => {
       }
       const save = await postAPI({path: 'messages', body})
       if (save.data) {
-        appendMessage(save.data)
+        appendMessage(save.data, props.user_id)
         await saveMessage(unique_id, save.data)
         postText.value = ''
       }
@@ -84,9 +85,7 @@ const chatDetail = (props) => {
     let msg = []
 
     data?.map(async e => {
-      if (e[unique_id]) {
-        msg = e[unique_id].reverse()
-      }
+      if (e[unique_id]) msg = e[unique_id].reverse()
       else {
         const splitUniqueId = unique_id.split('+')
         const reverseUniqueId = `${splitUniqueId[1]}+${splitUniqueId[0]}`
@@ -99,44 +98,15 @@ const chatDetail = (props) => {
     return msg
   }
 
-  const appendMessage = (msg) => {
-    const msgUL = document.getElementById(`message_${msg.unique_id}`);
-        if (msgUL) {
-          let element = ''
-          if (msg.user_id == props.user_id) {
-            element = `<div class="col-12" style="padding: 0" key=${msg.id}>
-                        <div class="row d-flex flex-row-reverse">
-                          <li class="col-auto card my-baloon">${msg.content}</li>
-                        </div>
-                      </div>`
-          } else {
-            element = `<div class="col-12" style="padding: 0" key=${msg.id}>
-                        <div class="row d-flex">
-                          <li class="col-auto card opponent-baloon">${msg.content}</li>
-                        </div>
-                      </div>`
-          }
-
-          msgUL.insertAdjacentHTML('beforeend', element)
-        }
-  }
-
   return (
     <>
       <MsgNav opponent={opponent} />
       <Bubble messages={messages} unique_id={unique_id} user_id={props.user_id} token={props.token} />
 
-      <form id="form" className="col-lg-offset-3" onSubmit={e => sendHandler(e)}>
+      <form id="formMessage" className="col-lg-offset-3" onSubmit={e => sendHandler(e)}>
         <input id="msg-input" autoComplete="off" />
         <button>Send</button>
       </form>
-      <style jsx>
-        {`
-        #form { padding: 0.25rem; position: fixed; bottom: 0; left: 0; right: 0; display: flex; height: 3rem; box-sizing: border-box; backdrop-filter: blur(10px); }
-        #msg-input { outline: none; border: 1px solid #4b3832; padding: 0 1rem; flex-grow: 1; border-radius: 2rem; margin: 0.25rem; }
-        #form > button { background: #333; border: none; padding: 0 1rem; border-radius: 3px; outline: none; color: #fff; }
-      `}
-      </style>
     </>
   )
 }
