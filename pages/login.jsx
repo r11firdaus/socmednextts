@@ -2,7 +2,9 @@ import { memo } from "react"
 import LoginForm from "../components/loginForm"
 const login = () => { 
   return (
-    <LoginForm type='login'/>
+    <div className="mt-3">
+      <LoginForm type='login'/>
+    </div>
   )
 }
 

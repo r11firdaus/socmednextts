@@ -1,7 +1,7 @@
 import Link from "next/link"
 import Router from "next/router"
 import { deleteData, getData } from "../../lib/dataStore"
-import ChatsChannel from "../../lib/websocket/chats_channel"
+import { ChatsChannel } from "../../lib/websocket/chats_channel"
 import { useAuthStore } from "../../lib/zustand/store"
 import SessionNav from "../session"
 

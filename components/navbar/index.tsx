@@ -1,5 +1,5 @@
 import { memo, useEffect } from "react"
-import ChatsChannel from "../../lib/websocket/chats_channel"
+import { ChatsChannel } from "../../lib/websocket/chats_channel"
 import { useAuthStore, useUserStore } from '../../lib/zustand/store'
 import Bottomnav from "./bottomnav"
 import Topnav from "./topnav"
