@@ -43,16 +43,30 @@ const postDetail = (props) => {
       user_id: await getData('user_id', 0),
       post_id: data.id
     }
-    const comment = postAPI({ path: 'comments', body })
+    const comment = await postAPI({ path: 'comments', body })
 
     if (comment.data) {
-      let res = comment.data
+      const data = comment.data
       postText.value = ''
+      appendComment(data)
     }
   }
 
+  const appendComment = (data) => {
+    const section = document.getElementById(`sectionComment-${data.post_id}`)
+    const htmlStr = `
+                      <div class="card border-secondary bg-dark" key=${data.id}>
+                        <div class="card-body">
+                          <strong>${data.email}</strong>
+                          <p>${data.content}</p>
+                        </div>
+                      </div>
+                    `
+    section.insertAdjacentHTML('beforeend', htmlStr);
+  }
+
   return (
-    <div className='container mt-5 pt-5 text-light'>
+    <div className='container mt-5 mb-5 pb-3 pt-5 text-light'>
       <div className="card my-2 border border-light bg-dark px-3 py-3">
         <strong className='card-title'>{data.email}</strong>
         <p>{data.content}</p>
