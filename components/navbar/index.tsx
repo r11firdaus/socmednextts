@@ -1,14 +1,15 @@
 import { memo, useEffect } from "react"
 import { ChatsChannel } from "../../lib/websocket/chats_channel"
-import { useAuthStore, useUserStore } from '../../lib/zustand/store'
+import { useAuthStore, useNavStore, useUserStore } from '../../lib/zustand/store'
 import Bottomnav from "./bottomnav"
 import Topnav from "./topnav"
 
 const Navigasi = ():JSX.Element => {
   const { isOnline } = useUserStore((state) => state)
+  const  { showBottom, showTop } = useNavStore(state => state)
 
   useEffect(() => {
-    console.log('navbar loaded')
+    console.log('nav loaded')
     const isLogin = useAuthStore.getState().isLogin
     !isOnline && isLogin && ChatsChannel
 
@@ -21,8 +22,8 @@ const Navigasi = ():JSX.Element => {
     
   return (
     <>
-      <Topnav />
-      <Bottomnav />
+      { showTop && <Topnav /> }
+      { showBottom && <Bottomnav /> }
     </>
   )
 }
