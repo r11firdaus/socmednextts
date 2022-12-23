@@ -8,16 +8,38 @@ import { getData } from '../lib/dataStore'
 export default function Home() {
   const [posts, setposts] = useState([])
   const [alert, setalert] = useState({ show: false, status: null, statusText: '', type: '' })
+  const [refetch, setrefetch] = useState(false)
   const user_id = getData('user_id', 0)
   const token = getData('token', 0)
+  let page = 0
 
   useEffect(() => {
-    async function fetchData() {
-      const posts = await getAPI({ path: `posts${user_id ? '?user_id='+user_id : ''}` })
-      posts.data && setposts(posts.data)
-    }
     fetchData()
+    return () => window.removeEventListener("scroll", onScroll);
   }, [])
+
+  const onScroll = async () => {
+    if ((window.innerHeight + window.scrollY) > document.body.offsetHeight) {
+        window.removeEventListener("scroll", onScroll);
+        setrefetch(true)
+        await fetchData()
+    }
+  }
+
+  const fetchData = async () => {
+    setTimeout(async () => {
+      const getPosts = await getAPI({ path: `posts?${user_id ? 'user_id='+user_id+'&' : ''}page=${page}` })
+      
+      if (getPosts.data) {
+        setposts((prevState) => [...prevState, ...getPosts.data])
+        if (getPosts.data.length == 5) {
+          page++
+        window.addEventListener("scroll", onScroll);
+      }
+    }
+    setrefetch(false)
+    }, 2000);
+  }
   
   const sendPost = async(e) => {
     e.preventDefault()
@@ -28,6 +50,7 @@ export default function Home() {
       img_url: '',
       user_id: await getData('user_id', 0)
     }
+
     const post = await postAPI({path: 'posts', body })
     if (post.data) {
       postText.value = ''
@@ -64,8 +87,9 @@ export default function Home() {
 
         <hr />
         <div className="container-fuid my-3">
-          { posts.map(e => ( <Posts id={e.id} email={e.email} content={e.content} key={e.id}/> )) }
+          <Posts posts={posts} />
         </div>
+        { refetch && <p className="text-light">Refetching...</p>}
     </div>
   )
 }

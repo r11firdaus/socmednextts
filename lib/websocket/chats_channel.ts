@@ -8,9 +8,9 @@ const user_id = getData('user_id', 0);
 const email = getData('email', 0);
 const token = getData('token', 0);
 
-const checkData = token && email && user_id ? true : false
+// const checkData = token && email && user_id ? true : false
 
-const ChatsChannel = checkData && cableApp.subscriptions.create(
+const ChatsChannel = cableApp.subscriptions.create(
   {
     channel: 'ChatsChannel',
     user_id,

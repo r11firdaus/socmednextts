@@ -1,6 +1,6 @@
 import { memo, useEffect } from "react"
 import ChatsChannel from "../../lib/websocket/chats_channel"
-import { useUserStore } from '../../lib/zustand/store'
+import { useAuthStore, useUserStore } from '../../lib/zustand/store'
 import Bottomnav from "./bottomnav"
 import Topnav from "./topnav"
 
@@ -9,7 +9,12 @@ const Navigasi = ():JSX.Element => {
 
   useEffect(() => {
     console.log('navbar loaded')
-    !isOnline && ChatsChannel
+    const isLogin = useAuthStore.getState().isLogin
+    !isOnline && isLogin && ChatsChannel
+
+    useAuthStore.subscribe(auth => {
+      !auth.isLogin && ChatsChannel.unsubscribe()
+    })
 
     return () => useUserStore.destroy()
   }, [])
