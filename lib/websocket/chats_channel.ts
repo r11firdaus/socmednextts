@@ -25,11 +25,15 @@ if (checkData) {
         useUserStore.setState({ isOnline: true })
       },
       async received(data) {
-        let newData = data.data
-        if (email == newData.opponent) newData.opponent = data.sender
-        await saveMessage(data.data.unique_id, newData)
-        useMessageStore.setState({ data: newData })
-        if ((window.innerHeight + window.scrollY) > document.body.offsetHeight) window.scrollTo(0, document.body.scrollHeight);
+        if (data.type == 'update') {
+          console.log(`message with id ${data.data.unique_id} readed!`)
+        } else {
+          let newData = data.data
+          if (email == newData.opponent) newData.opponent = data.sender
+          await saveMessage(data.data.unique_id, newData)
+          useMessageStore.setState({ data: newData })
+          if ((window.innerHeight + window.scrollY) > document.body.offsetHeight) window.scrollTo(0, document.body.scrollHeight);         
+        }
       },
       disconnected() {
         console.log('Chats disconnected\nUser id:', user_id)

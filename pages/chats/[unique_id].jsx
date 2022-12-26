@@ -2,9 +2,10 @@ import { useEffect, useState, memo } from 'react'
 import { getData } from '../../lib/dataStore'
 import dynamic from 'next/dynamic'
 import saveMessage from '../../lib/saveData/saveMessage'
-import { getAPI, postAPI } from '../../lib/callAPI'
+import { getAPI, postAPI, putAPI } from '../../lib/callAPI'
 import { useMessageStore, useNavStore, useUserStore } from "../../lib/zustand/store"
 import appendMessage from '../../components/message/appendMessage'
+import updateMessages from '../../lib/updateData/updateMessages'
 
 const Bubble = dynamic(() => import('../../components/message/bubble'), {ssr: false})
 const MsgNav = dynamic(() => import('../../components/navbar/msgNav'), {ssr: false})
@@ -45,7 +46,8 @@ const chatDetail = (props) => {
         const getOppnent = await getAPI({ path: `users/${props.opponentId}` })
         getOppnent.data && setopponent(getOppnent.data.email)
       }
-      msg.length > 0 && setmessages(msg)
+
+      setmessages(msg)
       if ((window.innerHeight + window.scrollY) > document.body.offsetHeight) window.scrollTo(0, document.body.scrollHeight);
     })
 
@@ -87,17 +89,45 @@ const chatDetail = (props) => {
     let msg = []
 
     data?.map(async e => {
-      if (e[unique_id]) msg = e[unique_id].reverse()
+      if (e[unique_id]) msg = processMsg(e[unique_id].reverse())
       else {
         const splitUniqueId = unique_id.split('+')
         const reverseUniqueId = `${splitUniqueId[1]}+${splitUniqueId[0]}`
         if (e[reverseUniqueId]) {
-          msg = e[reverseUniqueId].reverse()
           setunique_id(reverseUniqueId)
+          msg = processMsg(e[reverseUniqueId].reverse())
         }
       }
     })
     return msg
+  }
+
+  const processMsg = (msg) => {
+    let newMsg = msg
+    let unreadMsg = false
+    for (let i = 0; i < newMsg.length; i++) {
+      if (newMsg[i].status != 3 && newMsg[i].receiver_id == props.user_id) {
+        if (!unreadMsg) unreadMsg = true
+        newMsg[i].status = 3        
+      }
+    }
+    unreadMsg && readMessage();
+
+    return newMsg
+  }
+
+  const readMessage = async () => {
+    console.log('update msg')
+    const body = {
+      receiver_id: props.user_id,
+    }
+
+    const res = await putAPI({ path: `messages/${unique_id}`, body })
+
+    if (res.data) {
+      console.log(res.data)
+      updateMessages(unique_id, props.user_id)
+    } else console.log(res.message)
   }
 
   return (
