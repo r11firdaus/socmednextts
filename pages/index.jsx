@@ -1,23 +1,45 @@
 import Head from 'next/head'
-import Link from 'next/link'
 import { useEffect, useState } from 'react'
 import Alert from '../components/alert'
+import Posts from '../components/posts'
 import { getAPI, postAPI } from '../lib/callAPI'
 import { getData } from '../lib/dataStore'
 
 export default function Home() {
   const [posts, setposts] = useState([])
-  const [alert, setalert] = useState({show: false, status: null, statusText: '', type: ''})
+  const [alert, setalert] = useState({ show: false, status: null, statusText: '', type: '' })
+  const [refetch, setrefetch] = useState(false)
   const user_id = getData('user_id', 0)
   const token = getData('token', 0)
+  let page = 0
 
   useEffect(() => {
-    async function fetchData() {
-      const posts = await getAPI({path: `posts${user_id ? '?user_id='+user_id : ''}`})
-      posts.data && setposts(posts.data)
-    }
     fetchData()
+    return () => window.removeEventListener("scroll", onScroll);
   }, [])
+
+  const onScroll = async () => {
+    if ((window.innerHeight + window.scrollY) > document.body.offsetHeight) {
+        window.removeEventListener("scroll", onScroll);
+        setrefetch(true)
+        await fetchData()
+    }
+  }
+
+  const fetchData = async () => {
+    setTimeout(async () => {
+      const getPosts = await getAPI({ path: `posts?${user_id ? 'user_id='+user_id+'&' : ''}page=${page}` })
+      
+      if (getPosts.data) {
+        setposts((prevState) => [...prevState, ...getPosts.data])
+        if (getPosts.data.length == 5) {
+          page++
+        window.addEventListener("scroll", onScroll);
+      }
+    }
+    setrefetch(false)
+    }, 2000);
+  }
   
   const sendPost = async(e) => {
     e.preventDefault()
@@ -28,6 +50,7 @@ export default function Home() {
       img_url: '',
       user_id: await getData('user_id', 0)
     }
+
     const post = await postAPI({path: 'posts', body })
     if (post.data) {
       postText.value = ''
@@ -64,18 +87,9 @@ export default function Home() {
 
         <hr />
         <div className="container-fuid my-3">
-          {
-            posts.map(e => (
-              <div className="card my-2 border border-secondary bg-dark text-light" key={e.id}>
-                <div className="card-body">
-                  <strong>{e.email}</strong>
-                  <p>{e.content}</p>
-                  <div className="position-absolute bottom-0 end-0 px-2 py-2"><Link href={`/post/${e.id}`}>Comments</Link></div>
-                </div>
-            </div>
-            ))
-          }
+          <Posts posts={posts} />
         </div>
+        { refetch && <p className="text-light">Refetching...</p>}
     </div>
   )
 }

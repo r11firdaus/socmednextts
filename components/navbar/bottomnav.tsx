@@ -1,15 +1,30 @@
 import Link from "next/link"
-import { getData } from "../../lib/dataStore"
+import Router from "next/router"
+import { deleteData, getData } from "../../lib/dataStore"
+import { ChatsChannel } from "../../lib/websocket/chats_channel"
+import { useAuthStore } from "../../lib/zustand/store"
 import SessionNav from "../session"
 
 const Bottomnav = ():JSX.Element => {
   const token:string = getData('token', 0)
   const user_id:string|number = getData('user_id', 0)
+  const { isLogin } = useAuthStore(state => state)
+
+  // code sementara aja
+  const logout = () => {
+    localStorage.clear()
+    deleteData('token', 0)
+    deleteData('email', 0)
+    deleteData('user_id', 0)
+    useAuthStore.setState({isLogin: false})
+    ChatsChannel.unsubscribe()
+    Router.push('/login')
+  }
 
   // if (token && user_id)
     return(
       <nav className="navbar navbar-dark bg-dark navbar-expand fixed-bottom border-top border-light">
-        { token && user_id ?
+        { isLogin ?
           <ul className="navbar-nav nav-justified w-100">
             <li className="nav-item">
               <Link href="/" className="nav-link">
@@ -34,12 +49,12 @@ const Bottomnav = ():JSX.Element => {
               </a>
             </li>
             <li className="nav-item">
-              <a href="#" className="nav-link">
+              <Link href="#" className="nav-link" onClick={() => logout()}>
                 <svg xmlns="http://www.w3.org/2000/svg" width="22" height="22" fill="currentColor" className="bi bi-person-circle" viewBox="0 0 16 16">
                   <path d="M11 6a3 3 0 1 1-6 0 3 3 0 0 1 6 0z"/>
                   <path fillRule="evenodd" d="M0 8a8 8 0 1 1 16 0A8 8 0 0 1 0 8zm8-7a7 7 0 0 0-5.468 11.37C3.242 11.226 4.805 10 8 10s4.757 1.225 5.468 2.37A7 7 0 0 0 8 1z"/>
                 </svg>
-              </a>
+              </Link>
             </li>
           </ul> :
           <div className="d-flex justify-content-center w-100">

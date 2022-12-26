@@ -1,7 +1,10 @@
 import LoginForm from "../components/loginForm"
+
 const signup = () => { 
   return (
-    <LoginForm type='signup'/>
+    <div className="mt-3">
+      <LoginForm type='signup'/>
+    </div>
   )
 }
 
