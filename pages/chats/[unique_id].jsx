@@ -46,6 +46,7 @@ const chatDetail = (props) => {
         getOppnent.data && setopponent(getOppnent.data.email)
       }
       msg.length > 0 && setmessages(msg)
+      if ((window.innerHeight + window.scrollY) > document.body.offsetHeight) window.scrollTo(0, document.body.scrollHeight);
     })
 
     useMessageStore.subscribe(state => appendMessage(state.data, props.user_id))
@@ -75,6 +76,7 @@ const chatDetail = (props) => {
         appendMessage(save.data, props.user_id)
         await saveMessage(unique_id, save.data)
         postText.value = ''
+        if ((window.innerHeight + window.scrollY) > document.body.offsetHeight) window.scrollTo(0, document.body.scrollHeight);
       }
     }
   }

@@ -29,6 +29,7 @@ if (checkData) {
         if (email == newData.opponent) newData.opponent = data.sender
         await saveMessage(data.data.unique_id, newData)
         useMessageStore.setState({ data: newData })
+        if ((window.innerHeight + window.scrollY) > document.body.offsetHeight) window.scrollTo(0, document.body.scrollHeight);
       },
       disconnected() {
         console.log('Chats disconnected\nUser id:', user_id)
