@@ -2,6 +2,7 @@ import Link from "next/link"
 import { useEffect, useState } from "react"
 import { getData } from "../../lib/dataStore"
 import { useMessageStore, useUserStore } from "../../lib/zustand/store"
+import setDateTime from "../../lib/setDateTime";
 
 export const getServerSideProps = async (ctx) => {
   const { query } = ctx
@@ -20,7 +21,7 @@ const index = () => {
 
   useEffect(() => {
     fetchData()
-    useMessageStore.subscribe(state => fetchData())
+    useMessageStore.subscribe(state => state.data, fetchData)
     useUserStore.subscribe(state => state.isOnline && fetchData())
     return () => useMessageStore.destroy()
   }, [])
@@ -50,14 +51,19 @@ const index = () => {
   return (
     <div className="container mt-5 py-5 text-light">
       <ol className="list-group">
-        {chats?.map((e) => (
+        {chats.length > 0 && chats.map((e) => (
           <Link href={`/chats/${e.unique_id}`} key={e.id}>
             <li className="list-group-item d-flex justify-content-between align-items-start bg-dark text-light">
               <div className="ms-2 me-auto">
-                <div className="fw-bold">{e.opponent}</div>
+                <div className="fw-bold">
+                  {e.opponent}
+                  {e.unreadMessages > 0 && <span className="badge bg-primary rounded-pill mx-2">{e.unreadMessages}</span>}
+                </div>
                 {e.content}
               </div>
-              {e.unreadMessages > 0 && <span className="badge bg-primary rounded-pill">{e.unreadMessages}</span>}
+              <div className="d-flex align-items-end flex-column mb-3">
+                <small className="mt-auto">{setDateTime(e.created_at)}</small>
+              </div>
             </li>
           </Link>
         ))}

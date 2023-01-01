@@ -35,6 +35,7 @@ const chatDetail = (props) => {
   const disableTopNav = useNavStore((state) => state.ShowTopFalse)
   const enableBottomNav = useNavStore((state) => state.ShowBottomTrue)
   const enableTopNav = useNavStore((state) => state.ShowTopTrue)
+  const changeUnreadMessages = useMessageStore(state => state.setUnreadMessages)
 
   useEffect(() => { 
     disableBottomNav()
@@ -51,7 +52,13 @@ const chatDetail = (props) => {
       if ((window.innerHeight + window.scrollY) > document.body.offsetHeight) window.scrollTo(0, document.body.scrollHeight);
     })
 
-    useMessageStore.subscribe(state => appendMessage(state.data, props.user_id))
+    useMessageStore.subscribe(async state => {
+      state.data,
+      readMessage
+      setTimeout(() => {
+        appendMessage(state.data, props.user_id)
+      }, 500);
+    })
     useUserStore.subscribe(state => state.isOnline && fetchData())
     
     return () => {
@@ -63,10 +70,10 @@ const chatDetail = (props) => {
   
   const sendHandler = async (e) => {
     e.preventDefault()
-    let receiver_id = unique_id.split('+').filter(e => e != props.user_id)[0]
     const postText = document.getElementById('msg-input')
-
+    
     if (postText.value.trim() !== '') {
+      let receiver_id = unique_id.split('+').filter(e => e != props.user_id)[0]
       const body = {
         content: postText.value,
         user_id: props.user_id,
@@ -105,19 +112,20 @@ const chatDetail = (props) => {
   const processMsg = (msg) => {
     let newMsg = msg
     let unreadMsg = false
+    let unreadMessages = 0
     for (let i = 0; i < newMsg.length; i++) {
       if (newMsg[i].status != 3 && newMsg[i].receiver_id == props.user_id) {
         if (!unreadMsg) unreadMsg = true
-        newMsg[i].status = 3        
+        newMsg[i].status = 3
+        unreadMessages++
       }
     }
-    unreadMsg && readMessage();
+    unreadMsg && readMessage(unreadMessages);
 
     return newMsg
   }
 
-  const readMessage = async () => {
-    console.log('update msg')
+  const readMessage = async (count) => {
     const body = {
       receiver_id: props.user_id,
     }
@@ -125,8 +133,9 @@ const chatDetail = (props) => {
     const res = await putAPI({ path: `messages/${unique_id}`, body })
 
     if (res.data) {
-      console.log(res.data)
-      updateMessages(unique_id, props.user_id)
+      updateMessages({ id: unique_id, receiver_id: props.user_id })
+      const unreadMessages = useMessageStore.getState().unreadMessages
+      changeUnreadMessages(unreadMessages - count)
     } else console.log(res.message)
   }
 

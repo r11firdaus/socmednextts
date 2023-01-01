@@ -27,42 +27,41 @@ export default function Home() {
   }
 
   const fetchData = async () => {
-    setTimeout(async () => {
-      const getPosts = await getAPI({ path: `posts?${user_id ? 'user_id='+user_id+'&' : ''}page=${page}` })
+    const getPosts = await getAPI({ path: `posts?${user_id ? 'user_id='+user_id+'&' : ''}page=${page}` })
       
-      if (getPosts.data) {
-        setposts((prevState) => [...prevState, ...getPosts.data])
-        if (getPosts.data.length == 5) {
-          page++
+    if (getPosts.data) {
+      setposts((prevState) => [...prevState, ...getPosts.data])
+      if (getPosts.data.length == 10) {
+        page++
         window.addEventListener("scroll", onScroll);
       }
     }
     setrefetch(false)
-    }, 2000);
   }
   
   const sendPost = async(e) => {
     e.preventDefault()
     const postText = document.getElementById('postText')
+    if (postText.value.trim() !== '') {
+      const body = {
+        content: postText.value,
+        img_url: '',
+        user_id: await getData('user_id', 0)
+      }
 
-    const body = {
-      content: postText.value,
-      img_url: '',
-      user_id: await getData('user_id', 0)
-    }
-
-    const post = await postAPI({path: 'posts', body })
-    if (post.data) {
-      postText.value = ''
-      setalert({ show: true, status: 'Success.', statusText: 'Post successfully added!', type: 'success' })
-      setTimeout(() => {
-        setalert({show: false})
-      }, 5000);
-    } else {
-      setalert({ show: true, status: post.status, statusText: post.message, type: 'danger' })
-      setTimeout(() => {
-        setalert({show: false})
-      }, 5000);
+      const post = await postAPI({path: 'posts', body })
+      if (post.data) {
+        postText.value = ''
+        setalert({ show: true, status: 'Success.', statusText: 'Post successfully added!', type: 'success' })
+        setTimeout(() => {
+          setalert({show: false})
+        }, 5000);
+      } else {
+        setalert({ show: true, status: post.status, statusText: post.message, type: 'danger' })
+        setTimeout(() => {
+          setalert({show: false})
+        }, 5000);
+      }
     }
   }
 

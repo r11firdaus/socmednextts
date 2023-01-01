@@ -1,4 +1,5 @@
 import { useEffect } from "react"
+import setDateTime from "../lib/setDateTime"
 import CommentsChannel, { commentApp } from "../lib/websocket/comments_channel"
 
 const CommentsCard = (props) => {
@@ -14,6 +15,7 @@ const CommentsCard = (props) => {
           <div className="card-body">
             <strong>{e.email}</strong>
             <p>{e.content}</p>
+            <small>{setDateTime(e.created_at)}</small>
           </div>
         </div>
       )) }

@@ -1,6 +1,8 @@
+import Router from 'next/router';
 import { getData } from '../dataStore'
 import loadMessage from "../loadData/loadMessage";
 import saveMessage from "../saveData/saveMessage";
+import updateMessages from '../updateData/updateMessages';
 import { useMessageStore, useUserStore } from "../zustand/store";
 import cableApp from "./cable"
 
@@ -25,14 +27,25 @@ if (checkData) {
         useUserStore.setState({ isOnline: true })
       },
       async received(data) {
+        let newData = data.data
+        if (window.location.pathname == `/chats/${newData.unique_id}`) {
+          newData.status = 3
+          if ((window.innerHeight + window.scrollY) > document.body.offsetHeight) window.scrollTo(0, document.body.scrollHeight);
+        }
+        
         if (data.type == 'update') {
-          console.log(`message with id ${data.data.unique_id} readed!`)
+          updateMessages({id: data.data.unique_id, user_id})
+          
+          const elMsg = document.getElementById(`message_${data.data.unique_id}`) as HTMLElement
+          if (elMsg) {
+            const elArr = Array.from(elMsg.getElementsByTagName('span'))
+            elArr.map(e => e.setAttribute('class', 'text-primary'))
+          }
         } else {
-          let newData = data.data
           if (email == newData.opponent) newData.opponent = data.sender
           await saveMessage(data.data.unique_id, newData)
-          useMessageStore.setState({ data: newData })
-          if ((window.innerHeight + window.scrollY) > document.body.offsetHeight) window.scrollTo(0, document.body.scrollHeight);         
+          const unreadMessages = useMessageStore.getState().unreadMessages
+          useMessageStore.setState({ data: newData, unreadMessages: unreadMessages+1 })
         }
       },
       disconnected() {

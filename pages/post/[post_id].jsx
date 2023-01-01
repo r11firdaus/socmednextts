@@ -3,6 +3,7 @@ import { useEffect, useState } from 'react'
 import { getData } from '../../lib/dataStore'
 import { getAPI, postAPI } from '../..//lib/callAPI'
 import appendComment from "../../components/comment/appendComment"
+import setDateTime from '../../lib/setDateTime'
 
 const CommentsCard = dynamic(import("../../components/commentsCard"), {ssr: false})
 
@@ -39,17 +40,19 @@ const postDetail = (props) => {
     e.preventDefault()
 
     const postText = document.getElementById('postText')
-    const body = {
-      content: postText.value,
-      user_id: await getData('user_id', 0),
-      post_id: data.id
-    }
-    const comment = await postAPI({ path: 'comments', body })
+    if (postText.value.trim() !== '') {
+      const body = {
+        content: postText.value,
+        user_id: await getData('user_id', 0),
+        post_id: data.id
+      }
+      const comment = await postAPI({ path: 'comments', body })
 
-    if (comment.data) {
-      const data = comment.data
-      postText.value = ''
-      appendComment(data)
+      if (comment.data) {
+        const data = comment.data
+        postText.value = ''
+        appendComment(data)
+      }
     }
   }
 
@@ -57,6 +60,7 @@ const postDetail = (props) => {
     <div className='container mt-5 mb-5 pb-3 pt-5 text-light'>
       <div className="card my-2 border border-light bg-dark px-3 py-3">
         <strong className='card-title'>{data.email}</strong>
+        <small className="text-secondary mb-3">{setDateTime(data.created_at)}</small>
         <p>{data.content}</p>
       </div>
 
