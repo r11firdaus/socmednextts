@@ -1,6 +1,7 @@
 import setDateTime from "../../lib/setDateTime";
+import MessagesTypes from "../../types/messages";
 
-const appendMessage = (msg, user_id) => {
+const appendMessage = (msg: MessagesTypes, user_id: number) => {
   const msgUL = document.getElementById(`message_${msg.unique_id}`);
       if (msgUL) {
         let element = ''

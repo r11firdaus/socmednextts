@@ -1,13 +1,15 @@
 import dynamic from 'next/dynamic'
 import { useEffect, useState } from 'react'
 import { getData } from '../../lib/dataStore'
-import { getAPI, postAPI } from '../..//lib/callAPI'
+import { getAPI, postAPI } from '../../lib/callAPI'
 import appendComment from "../../components/comment/appendComment"
 import setDateTime from '../../lib/setDateTime'
+import { GetServerSideProps } from 'next'
+import PostsTypes from '../../types/posts'
 
 const CommentsCard = dynamic(import("../../components/commentsCard"), {ssr: false})
 
-export const getServerSideProps = async (ctx) => {
+export const getServerSideProps: GetServerSideProps = async (ctx) => {
   const { query } = ctx
   const post_id = query.post_id
 
@@ -22,7 +24,7 @@ export const getServerSideProps = async (ctx) => {
   return {props: {data: data.data}}
 }
 
-const postDetail = (props) => {
+const postDetail = (props: { data: PostsTypes }): JSX.Element => {
   const { data } = props
   const [comments, setcomments] = useState([])
   const user_id = getData('user_id', 0)
@@ -36,10 +38,10 @@ const postDetail = (props) => {
     fetchData()
   }, [])
   
-  const sendComment = async (e) => {
+  const sendComment = async (e: React.FormEvent<HTMLButtonElement>) => {
     e.preventDefault()
 
-    const postText = document.getElementById('postText')
+    const postText = document.getElementById('postText') as HTMLInputElement
     if (postText.value.trim() !== '') {
       const body = {
         content: postText.value,

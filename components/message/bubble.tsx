@@ -1,6 +1,13 @@
 import setDateTime from '../../lib/setDateTime'
+import MessagesTypes from "../../types/messages";
+import UserTypes from '../../types/users';
 
-const Bubble = (props) => { 
+interface Props extends UserTypes {
+  unique_id: string,
+  messages: MessagesTypes[]
+}
+
+const Bubble = (props: Props): JSX.Element => { 
 	return (<>
     <ul className="row" id={`message_${props.unique_id}`} style={{ margin: '5rem 2rem 3rem 0', listStyle: 'none' }}>
       {props.messages.length > 0 &&

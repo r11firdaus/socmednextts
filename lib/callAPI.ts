@@ -5,7 +5,7 @@ const API_URL = process.env.NEXT_PUBLIC_API_URL
 // params must be an object
 type Params = {
   path: string,
-  body: any
+  body?: any
 }
 
 export const getAPI = async (params: Params) => {

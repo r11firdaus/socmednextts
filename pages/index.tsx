@@ -4,10 +4,18 @@ import Alert from '../components/alert'
 import Posts from '../components/posts'
 import { getAPI, postAPI } from '../lib/callAPI'
 import { getData } from '../lib/dataStore'
+import PostsTypes from '../types/posts'
 
-export default function Home() {
-  const [posts, setposts] = useState([])
-  const [alert, setalert] = useState({ show: false, status: null, statusText: '', type: '' })
+type AlertTypes = {
+  show: boolean,
+  status: string|null,
+  statusText: string,
+  type: string
+}
+
+export default function Home(): JSX.Element {
+  const [posts, setposts] = useState<PostsTypes[]>([])
+  const [alert, setalert] = useState<AlertTypes>({ show: false, status: null, statusText: '', type: '' })
   const [refetch, setrefetch] = useState(false)
   const user_id = getData('user_id', 0)
   const token = getData('token', 0)
@@ -39,9 +47,9 @@ export default function Home() {
     setrefetch(false)
   }
   
-  const sendPost = async(e) => {
+  const sendPost = async(e: React.FormEvent<HTMLButtonElement>) => {
     e.preventDefault()
-    const postText = document.getElementById('postText')
+    const postText = document.getElementById('postText') as HTMLInputElement
     if (postText.value.trim() !== '') {
       const body = {
         content: postText.value,
@@ -54,12 +62,12 @@ export default function Home() {
         postText.value = ''
         setalert({ show: true, status: 'Success.', statusText: 'Post successfully added!', type: 'success' })
         setTimeout(() => {
-          setalert({show: false})
+          setalert({ show: false, status: null, statusText: '', type: '' })
         }, 5000);
       } else {
         setalert({ show: true, status: post.status, statusText: post.message, type: 'danger' })
         setTimeout(() => {
-          setalert({show: false})
+          setalert({ show: false, status: null, statusText: '', type: '' })
         }, 5000);
       }
     }

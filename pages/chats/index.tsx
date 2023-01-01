@@ -3,8 +3,10 @@ import { useEffect, useState } from "react"
 import { getData } from "../../lib/dataStore"
 import { useMessageStore, useUserStore } from "../../lib/zustand/store"
 import setDateTime from "../../lib/setDateTime";
+import MessagesTypes from "../../types/messages";
+import { GetServerSideProps } from "next";
 
-export const getServerSideProps = async (ctx) => {
+export const getServerSideProps: GetServerSideProps = async (ctx) => {
   const { query } = ctx
   const user_id = getData('user_id', 0, ctx)
   const token = getData('token', 0, ctx)
@@ -16,8 +18,12 @@ export const getServerSideProps = async (ctx) => {
   }
 }
 
-const index = () => {
-  const [chats, setchats] = useState([])
+interface WithUnreadMessages extends MessagesTypes {
+  unreadMessages: number
+}
+
+const index = (): JSX.Element => {
+  const [chats, setchats] = useState<WithUnreadMessages[]>([])
 
   useEffect(() => {
     fetchData()
@@ -32,8 +38,8 @@ const index = () => {
     
     if (data) {
       const user_id = getData('user_id', 0)
-      let newChats = []
-      data.data.map(e => {
+      let newChats: WithUnreadMessages[] = []
+      data.data.map((e: {[key: string]: WithUnreadMessages[]}) => {
         for (var key in e) {
           if (e.hasOwnProperty(key)) {
             let lastMessage = e[key][0]

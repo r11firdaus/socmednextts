@@ -1,16 +1,9 @@
 import Link from "next/link"
 import { memo } from "react"
 import setDateTime from "../lib/setDateTime"
+import PostsTypes from "../types/posts"
 
-type Props = {
-  email: string,
-  id: number|string,
-  content: string,
-  user_id?: string|number,
-  created_at: string
-}
-
-const Posts = (props: { posts: Props[] }): JSX.Element => {
+const Posts = (props: { posts: PostsTypes[] }): JSX.Element => {
   const posts = props.posts
   
   return (<>
