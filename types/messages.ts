@@ -7,7 +7,11 @@ interface MessagesTypes {
   updated_at: string,
   content: string,
   opponent: string,
-  status: number|null
+  status: number|null,
+}
+
+export interface MessagesData {
+  [key: string]: MessagesTypes[]
 }
 
 export default MessagesTypes

@@ -141,7 +141,7 @@ const chatDetail = (props: Props): JSX.Element => {
     const res = await putAPI({ path: `messages/${unique_id}`, body })
 
     if (res.data) {
-      updateMessages({ id: unique_id, receiver_id: props.user_id })
+      updateMessages({ unique_id: unique_id, receiver_id: props.user_id })
       const unreadMessages = useMessageStore.getState().unreadMessages
       changeUnreadMessages(unreadMessages - count)
     } else console.log(res.message)

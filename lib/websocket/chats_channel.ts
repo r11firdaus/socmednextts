@@ -1,4 +1,3 @@
-import Router from 'next/router';
 import { getData } from '../dataStore'
 import loadMessage from "../loadData/loadMessage";
 import saveMessage from "../saveData/saveMessage";
@@ -34,7 +33,7 @@ if (checkData) {
         }
         
         if (data.type == 'update') {
-          updateMessages({id: data.data.unique_id, user_id})
+          updateMessages({unique_id: data.data.unique_id, user_id})
           
           const elMsg = document.getElementById(`message_${data.data.unique_id}`) as HTMLElement
           if (elMsg) {
@@ -50,7 +49,7 @@ if (checkData) {
       },
       disconnected() {
         console.log('Chats disconnected\nUser id:', user_id)
-        useMessageStore.setState({ isOnline: false })
+        useUserStore.setState({ isOnline: false })
       },
     }
   )
