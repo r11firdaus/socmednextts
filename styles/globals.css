@@ -114,3 +114,9 @@ a {
     outline: none;
     color: #fff;
   }
+
+  .msg-txt{
+    white-space: nowrap; 
+    overflow: hidden;
+    text-overflow: ellipsis; 
+  }

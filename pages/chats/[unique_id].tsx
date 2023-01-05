@@ -59,12 +59,12 @@ const chatDetail = (props: Props): JSX.Element => {
       if ((window.innerHeight + window.scrollY) > document.body.offsetHeight) window.scrollTo(0, document.body.scrollHeight);
     })
 
-    useMessageStore.subscribe(async state => {
-      state.data,
-      setTimeout(() => {
-        appendMessage(state.data, props.user_id)
-      }, 500);
-    })
+    useMessageStore.subscribe(
+      (state) => state.data,
+      (data, previousPaw) => {
+        appendMessage(data, props.user_id)
+      }
+    )
     useUserStore.subscribe(state => state.isOnline && fetchData())
     
     return () => {

@@ -1,3 +1,4 @@
+import { memo } from 'react';
 import setDateTime from '../../lib/setDateTime'
 import MessagesTypes from "../../types/messages";
 import UserTypes from '../../types/users';
@@ -41,4 +42,4 @@ const Bubble = (props: Props): JSX.Element => {
 	</>)
 }
 
-export default Bubble
+export default memo(Bubble)
