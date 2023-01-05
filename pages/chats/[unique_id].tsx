@@ -2,13 +2,13 @@ import { useEffect, useState, memo } from 'react'
 import { getData } from '../../lib/dataStore'
 import dynamic from 'next/dynamic'
 import saveMessage from '../../lib/saveData/saveMessage'
-import { getAPI, postAPI, putAPI } from '../../lib/callAPI'
+import { getAPI, postAPI } from '../../lib/callAPI'
 import { useMessageStore, useNavStore, useUserStore } from "../../lib/zustand/store"
 import appendMessage from '../../components/message/appendMessage'
-import updateMessages from '../../lib/updateData/updateMessages'
 import { GetServerSideProps } from 'next'
 import UserTypes from '../../types/users'
 import MessagesTypes from '../../types/messages'
+import readMessage from '../../lib/updateData/readMessage'
 
 const Bubble = dynamic(() => import('../../components/message/bubble'), {ssr: false})
 const MsgNav = dynamic(() => import('../../components/navbar/msgNav'), {ssr: false})
@@ -43,7 +43,6 @@ const chatDetail = (props: Props): JSX.Element => {
   const disableTopNav = useNavStore((state) => state.ShowTopFalse)
   const enableBottomNav = useNavStore((state) => state.ShowBottomTrue)
   const enableTopNav = useNavStore((state) => state.ShowTopTrue)
-  const changeUnreadMessages = useMessageStore(state => state.setUnreadMessages)
 
   useEffect(() => { 
     disableBottomNav()
@@ -62,7 +61,6 @@ const chatDetail = (props: Props): JSX.Element => {
 
     useMessageStore.subscribe(async state => {
       state.data,
-      readMessage
       setTimeout(() => {
         appendMessage(state.data, props.user_id)
       }, 500);
@@ -128,23 +126,9 @@ const chatDetail = (props: Props): JSX.Element => {
         unreadMessages++
       }
     }
-    unreadMsg && readMessage(unreadMessages);
+    unreadMsg && readMessage(props.user_id, unique_id, unreadMessages);
 
     return newMsg
-  }
-
-  const readMessage = async (count: number) => {
-    const body = {
-      receiver_id: props.user_id,
-    }
-
-    const res = await putAPI({ path: `messages/${unique_id}`, body })
-
-    if (res.data) {
-      updateMessages({ unique_id: unique_id, receiver_id: props.user_id })
-      const unreadMessages = useMessageStore.getState().unreadMessages
-      changeUnreadMessages(unreadMessages - count)
-    } else console.log(res.message)
   }
 
   return (

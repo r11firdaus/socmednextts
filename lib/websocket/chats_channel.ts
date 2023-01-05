@@ -1,6 +1,8 @@
+import MessagesTypes from '../../types/messages';
 import { getData } from '../dataStore'
 import loadMessage from "../loadData/loadMessage";
 import saveMessage from "../saveData/saveMessage";
+import readMessage from '../updateData/readMessage';
 import updateMessages from '../updateData/updateMessages';
 import { useMessageStore, useUserStore } from "../zustand/store";
 import cableApp from "./cable"
@@ -26,11 +28,8 @@ if (checkData) {
         useUserStore.setState({ isOnline: true })
       },
       async received(data) {
-        let newData = data.data
-        if (window.location.pathname == `/chats/${newData.unique_id}`) {
-          newData.status = 3
-          if ((window.innerHeight + window.scrollY) > document.body.offsetHeight) window.scrollTo(0, document.body.scrollHeight);
-        }
+        let newData: MessagesTypes = data.data
+        if (window.location.pathname == `/chats/${newData.unique_id}`) newData.status = 3
         
         if (data.type == 'update') {
           updateMessages({unique_id: data.data.unique_id, user_id})
@@ -43,8 +42,12 @@ if (checkData) {
         } else {
           if (email == newData.opponent) newData.opponent = data.sender
           await saveMessage(data.data.unique_id, newData)
-          const unreadMessages = useMessageStore.getState().unreadMessages
+          let unreadMessages = useMessageStore.getState().unreadMessages
           useMessageStore.setState({ data: newData, unreadMessages: unreadMessages+1 })
+          if (window.location.pathname == `/chats/${newData.unique_id}`) {
+            await readMessage(user_id, newData.unique_id, 1)
+            if ((window.innerHeight + window.scrollY) > document.body.offsetHeight) window.scrollTo(0, document.body.scrollHeight);
+          }
         }
       },
       disconnected() {
