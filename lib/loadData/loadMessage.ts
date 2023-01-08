@@ -8,7 +8,7 @@ import { setData } from "../dataStore"
 3 = read
 */
 
-const loadMessage = async (id) => {
+const loadMessage = async (id: number): Promise<boolean> => {
   console.log('get messages from API')
   const messages = await getAPI({path: `messages?user_id=${id}`})
   if (messages.data) {

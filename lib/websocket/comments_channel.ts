@@ -2,10 +2,10 @@ import cableApp from "./cable"
 import { getData } from '../dataStore'
 import appendComment from "../../components/comment/appendComment"
 
-export let commentApp;
+export let commentApp: ActionCable.Channel;
 
-const CommentsChannel = (post_id) => {
-  const email = getData('email', 0);
+const CommentsChannel = (post_id: number) => {
+  const email: string = getData('email', 0);
   commentApp = cableApp.subscriptions.create(
     {
         channel: 'CommentsChannel',

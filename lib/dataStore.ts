@@ -1,5 +1,6 @@
 import { crypt, decrypt } from './encriptor'
 import { setCookie, getCookie, hasCookie, deleteCookie } from 'cookies-next';
+import { GetServerSidePropsContext } from 'next';
 
 /*
   location
@@ -8,7 +9,7 @@ import { setCookie, getCookie, hasCookie, deleteCookie } from 'cookies-next';
     all = 3
 */
 
-const setData = (key, value, location) => {  
+const setData = (key: string, value: any, location: number) => {  
   const encryptKey = crypt(process.env.NEXT_PUBLIC_ENC_KEY, `${key}`)
   const encryptValue = crypt(process.env.NEXT_PUBLIC_ENC_KEY, JSON.stringify(value))
   const checkIsDataPresent = localStorage.getItem(encryptKey)
@@ -34,7 +35,7 @@ const setData = (key, value, location) => {
   }
 }
 
-const getData = (key, location, ctx) => {
+const getData = (key: string, location: number, ctx?: GetServerSidePropsContext) => {
   let siteData;
   switch (location) {
     case 0:
@@ -51,7 +52,7 @@ const getData = (key, location, ctx) => {
   if (siteData) return JSON.parse(decrypt(process.env.NEXT_PUBLIC_ENC_KEY, siteData))
 }
 
-const deleteData = (key, location, ctx) => {
+const deleteData = (key: string, location: number, ctx?: GetServerSidePropsContext) => {
   const encryptKey = crypt(process.env.NEXT_PUBLIC_ENC_KEY, `${key}`)
   switch (location) {
     case 0:

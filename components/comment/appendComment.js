@@ -1,3 +1,5 @@
+import setDateTime from "../../lib/setDateTime";
+
 const appendComment = (comment) => {
   const section = document.getElementById(`sectionComment-${comment.post_id}`)
   const htmlStr = `
@@ -5,6 +7,7 @@ const appendComment = (comment) => {
                       <div class="card-body">
                         <strong>${comment.email}</strong>
                         <p>${comment.content}</p>
+                        <small>${setDateTime(comment.created_at)}</small>
                       </div>
                     </div>
                   `

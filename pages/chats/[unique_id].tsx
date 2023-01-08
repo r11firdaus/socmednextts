@@ -5,13 +5,17 @@ import saveMessage from '../../lib/saveData/saveMessage'
 import { getAPI, postAPI } from '../../lib/callAPI'
 import { useMessageStore, useNavStore, useUserStore } from "../../lib/zustand/store"
 import appendMessage from '../../components/message/appendMessage'
+import { GetServerSideProps } from 'next'
+import UserTypes from '../../types/users'
+import MessagesTypes from '../../types/messages'
+import readMessage from '../../lib/updateData/readMessage'
 
 const Bubble = dynamic(() => import('../../components/message/bubble'), {ssr: false})
 const MsgNav = dynamic(() => import('../../components/navbar/msgNav'), {ssr: false})
 
-export const getServerSideProps = async (ctx) => {
+export const getServerSideProps: GetServerSideProps = async (ctx) => {
   const { query } = ctx
-  const unique_id = query.unique_id
+  const unique_id = (query.unique_id) as string
   const user_id = getData('user_id', 0, ctx)
   const token = getData('token', 0, ctx)
 
@@ -26,8 +30,13 @@ export const getServerSideProps = async (ctx) => {
   }
 }
 
-const chatDetail = (props) => {
-  const [messages, setmessages] = useState([])
+interface Props extends UserTypes {
+  unique_id: string,
+  opponentId: string,
+}
+
+const chatDetail = (props: Props): JSX.Element => {
+  const [messages, setmessages] = useState<MessagesTypes[]>([])
   const [unique_id, setunique_id] = useState(props.unique_id)
   const [opponent, setopponent] = useState('')
   const disableBottomNav = useNavStore((state) => state.ShowBottomFalse)
@@ -45,11 +54,17 @@ const chatDetail = (props) => {
         const getOppnent = await getAPI({ path: `users/${props.opponentId}` })
         getOppnent.data && setopponent(getOppnent.data.email)
       }
-      msg.length > 0 && setmessages(msg)
+
+      setmessages(msg)
       if ((window.innerHeight + window.scrollY) > document.body.offsetHeight) window.scrollTo(0, document.body.scrollHeight);
     })
 
-    useMessageStore.subscribe(state => appendMessage(state.data, props.user_id))
+    useMessageStore.subscribe(
+      (state) => state.data,
+      (data, previousPaw) => {
+        appendMessage(data, props.user_id)
+      }
+    )
     useUserStore.subscribe(state => state.isOnline && fetchData())
     
     return () => {
@@ -59,12 +74,12 @@ const chatDetail = (props) => {
     }
   }, [])
   
-  const sendHandler = async (e) => {
+  const sendHandler = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault()
-    let receiver_id = unique_id.split('+').filter(e => e != props.user_id)[0]
-    const postText = document.getElementById('msg-input')
-
+    const postText = document.getElementById('msg-input') as HTMLInputElement
+    
     if (postText.value.trim() !== '') {
+      let receiver_id = unique_id.split('+').filter((e: string) => e != `${props.user_id}`)[0]
       const body = {
         content: postText.value,
         user_id: props.user_id,
@@ -84,20 +99,36 @@ const chatDetail = (props) => {
   const fetchData = async () => {
     console.warn('load messages')
     const data = await getData('messages', 1)?.data
-    let msg = []
+    let msg: MessagesTypes[] = []
 
-    data?.map(async e => {
-      if (e[unique_id]) msg = e[unique_id].reverse()
+    data?.map(async (e: { [key: string]: MessagesTypes[] }) => {
+      if (e[unique_id]) msg = processMsg(e[unique_id].reverse())
       else {
         const splitUniqueId = unique_id.split('+')
         const reverseUniqueId = `${splitUniqueId[1]}+${splitUniqueId[0]}`
         if (e[reverseUniqueId]) {
-          msg = e[reverseUniqueId].reverse()
           setunique_id(reverseUniqueId)
+          msg = processMsg(e[reverseUniqueId].reverse())
         }
       }
     })
     return msg
+  }
+
+  const processMsg = (msg: MessagesTypes[]) => {
+    let newMsg = msg
+    let unreadMsg = false
+    let unreadMessages = 0
+    for (let i = 0; i < newMsg.length; i++) {
+      if (newMsg[i].status != 3 && newMsg[i].receiver_id == props.user_id) {
+        if (!unreadMsg) unreadMsg = true
+        newMsg[i].status = 3
+        unreadMessages++
+      }
+    }
+    unreadMsg && readMessage(props.user_id, unique_id, unreadMessages);
+
+    return newMsg
   }
 
   return (
