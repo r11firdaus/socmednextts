@@ -59,11 +59,11 @@ const postDetail = (props: { data: PostsTypes }): JSX.Element => {
   }
 
   return (
-    <div className='container mt-5 mb-5 pb-3 pt-5 text-light'>
+    <div className='container mt-3 py-5'>
       <div className="card my-2 border border-light bg-dark px-3 py-3">
-        <strong className='card-title'>{data.email}</strong>
+        <strong className='card-title text-light'>{data.email}</strong>
         <small className="text-secondary mb-3">{setDateTime(data.created_at)}</small>
-        <p>{data.content}</p>
+        <p className='text-light'>{data.content}</p>
       </div>
 
       <div className="pl-3 py-3"><h5>Comments</h5></div>
@@ -78,9 +78,7 @@ const postDetail = (props: { data: PostsTypes }): JSX.Element => {
             <button className="form-control btn btn-success" onClick={(e) => sendComment(e)}>Send</button>
           </div>
         </div>
-      }
-
-      
+      }    
     </div>
   )
 }

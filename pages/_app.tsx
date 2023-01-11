@@ -1,4 +1,5 @@
 import '../styles/globals.css'
+import '../styles/spinner.css'
 import type { AppProps } from 'next/app'
 import dynamic from 'next/dynamic'
 import { useAuthStore } from '../lib/zustand/store'
@@ -6,6 +7,7 @@ import { useEffect, useState } from 'react'
 import { getData } from '../lib/dataStore'
 
 const Navbar = dynamic(() => import("../components/navbar"), {ssr: false})
+const Spinner = dynamic(() => import("../components/spinner"), {ssr: false})
 
 export default function App({ Component, pageProps }: AppProps) {
   const [loading, setloading] = useState(true)
@@ -24,7 +26,7 @@ export default function App({ Component, pageProps }: AppProps) {
   return (
     <>
       {
-        loading ? <div className='text-light'>LOADING...</div> :
+        loading ? <div className="h-100"><Spinner types='ring' /></div> :
         <>
           <Navbar />
           <Component {...pageProps} />

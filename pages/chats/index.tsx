@@ -1,10 +1,12 @@
-import Link from "next/link"
 import { useEffect, useState } from "react"
 import { getData } from "../../lib/dataStore"
 import { useMessageStore, useUserStore } from "../../lib/zustand/store"
-import setDateTime from "../../lib/setDateTime";
-import MessagesTypes from "../../types/messages";
+import { WithUnreadMessages } from "../../types/messages";
 import { GetServerSideProps } from "next";
+import dynamic from "next/dynamic";
+
+const Spinner = dynamic(() => import("../../components/spinner"), { ssr: false })
+const Chatlist = dynamic(() => import("../../components/message/chatlist"), { ssr: false })
 
 export const getServerSideProps: GetServerSideProps = async (ctx) => {
   const { query } = ctx
@@ -18,12 +20,11 @@ export const getServerSideProps: GetServerSideProps = async (ctx) => {
   }
 }
 
-interface WithUnreadMessages extends MessagesTypes {
-  unreadMessages: number
-}
+
 
 const index = (): JSX.Element => {
   const [chats, setchats] = useState<WithUnreadMessages[]>([])
+  const [loading, setloading] = useState(true)
 
   useEffect(() => {
     fetchData()
@@ -52,31 +53,18 @@ const index = (): JSX.Element => {
       })
       setchats(newChats)
     }
+    setloading(false)
   }
   
   return (
-    <div className="container mt-5 py-5 text-light">
-      <ol className="list-group">
-        {chats.length > 0 && chats.map((e) => (
-          <Link href={`/chats/${e.unique_id}`} key={e.id}>
-            <li className="list-group-item d-flex justify-content-between align-items-start bg-dark text-light">
-              <div className="ms-2 me-auto" style={{"width": "70%"}}>
-                <div className="d-flex flex-row">
-                  <div className="fw-bold msg-txt">
-                    {e.opponent}
-                  </div>
-                  {e.unreadMessages > 0 && <span className="badge bg-primary rounded-pill mx-2">{e.unreadMessages}</span>}
-                </div>
-                <div className="msg-txt">{e.content}</div>
-              </div>
-              <div className="d-flex align-items-end flex-column mb-3">
-                <small className="mt-auto" style={{"fontSize": "10px"}}>{setDateTime(e.created_at)}</small>
-              </div>
-            </li>
-          </Link>
-        ))}
-      </ol>
-    </div>
+    <>
+    {
+      loading ? <div className="h-100"><Spinner types='ripple' /></div> :
+        <div className="container mt-3 py-5">
+          <Chatlist chats={chats} />
+        </div>
+    }
+    </>
   )
 }
 

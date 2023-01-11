@@ -10,7 +10,7 @@ interface Props extends UserTypes {
 
 const Bubble = (props: Props): JSX.Element => { 
 	return (<>
-    <ul className="row" id={`message_${props.unique_id}`} style={{ margin: '5rem 2rem 3rem 0', listStyle: 'none' }}>
+    <ul className="row my-5 pb-5" id={`message_${props.unique_id}`} style={{ listStyle: 'none' }}>
       {props.messages.length > 0 &&
         props.messages.map((per) => (
           <div className="col-12" style={{ padding: '0' }} key={per.id}>

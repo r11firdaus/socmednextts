@@ -14,4 +14,8 @@ export interface MessagesData {
   [key: string]: MessagesTypes[]
 }
 
+export interface WithUnreadMessages extends MessagesTypes {
+  unreadMessages: number
+}
+
 export default MessagesTypes
