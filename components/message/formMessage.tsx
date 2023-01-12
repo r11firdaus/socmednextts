@@ -1,33 +1,28 @@
 import { getData } from '../../lib/dataStore'
 import { memo } from 'react'
 import MessagesTypes from '../../types/messages'
+import { postAPI } from '../../lib/callAPI'
 
 const FormMessage = (props: { messages: MessagesTypes[], unique_id: string }): JSX.Element => {
 	const sendHandler = async (e: React.FormEvent<HTMLFormElement>) => {
-		const user_id = getData('user_id')
+		const user_id = getData('user_id', 0)
     e.preventDefault()
     let receiver_id = props.unique_id.split('+').filter(e => e != user_id)[0]
     const postText = document.getElementById('msg-input') as HTMLInputElement
 
-    const res = await fetch(`http://localhost:4000/api/v1/messages`, {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json',
-        'token': await getData('token')
-      },
-      body: JSON.stringify({
+    const res = await postAPI({path: `http://localhost:4000/api/v1/messages`,
+      body: {
         content: postText.value,
         user_id,
         unique_id: props.unique_id,
         receiver_id
-      })
+      }
     })
 
-    if (res.status === 200) {
-      let resJson = await res.json()
+    if (res.data) {
       postText.value = ''
       let cloneMessages = [...props.messages]
-      cloneMessages.push(resJson.data)
+      cloneMessages.push(res.data)
     }
   }
 	return (<>
