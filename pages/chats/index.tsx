@@ -22,7 +22,7 @@ export const getServerSideProps: GetServerSideProps = async (ctx) => {
 
 
 
-const index = (): JSX.Element => {
+const Index = (): JSX.Element => {
   const [chats, setchats] = useState<WithUnreadMessages[]>([])
   const [loading, setloading] = useState(true)
 
@@ -68,4 +68,4 @@ const index = (): JSX.Element => {
   )
 }
 
-export default index
+export default Index

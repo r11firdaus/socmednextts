@@ -16,7 +16,7 @@ export const getServerSideProps: GetServerSideProps = async (ctx) => {
   return { props: { user_email }}
 }
 
-const userpage = (props: { user_email: string }): JSX.Element => {
+const Userpage = (props: { user_email: string }): JSX.Element => {
   const [loading, setloading] = useState(true)
   const [userData, setuserData] = useState<UserTypes>({ user_id: 0 })
   const [posts, setposts] = useState<PostsTypes[]>([])
@@ -83,4 +83,4 @@ const userpage = (props: { user_email: string }): JSX.Element => {
   )
 }
 
-export default userpage
+export default Userpage

@@ -24,7 +24,7 @@ export const getServerSideProps: GetServerSideProps = async (ctx) => {
   return {props: {data: data.data}}
 }
 
-const postDetail = (props: { data: PostsTypes }): JSX.Element => {
+const PostDetail = (props: { data: PostsTypes }): JSX.Element => {
   const { data } = props
   const [comments, setcomments] = useState([])
   const user_id = getData('user_id', 0)
@@ -83,4 +83,4 @@ const postDetail = (props: { data: PostsTypes }): JSX.Element => {
   )
 }
 
-export default postDetail
+export default PostDetail

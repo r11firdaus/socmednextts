@@ -1,6 +1,6 @@
 import { memo } from "react"
 import LoginForm from "../components/loginForm"
-const login = () => { 
+const Login = () => { 
   return (
     <div className="mt-3">
       <LoginForm type='login'/>
@@ -8,4 +8,4 @@ const login = () => {
   )
 }
 
-export default memo(login)
+export default memo(Login)

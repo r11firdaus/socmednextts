@@ -35,7 +35,7 @@ interface Props extends UserTypes {
   opponentId: string,
 }
 
-const chatDetail = (props: Props): JSX.Element => {
+const ChatDetail = (props: Props): JSX.Element => {
   const [messages, setmessages] = useState<MessagesTypes[]>([])
   const [unique_id, setunique_id] = useState(props.unique_id)
   const [opponent, setopponent] = useState('')
@@ -144,4 +144,4 @@ const chatDetail = (props: Props): JSX.Element => {
   )
 }
 
-export default memo(chatDetail)
+export default memo(ChatDetail)

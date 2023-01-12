@@ -1,6 +1,6 @@
 import LoginForm from "../components/loginForm"
 
-const signup = () => { 
+const Signup = () => { 
   return (
     <div className="mt-3">
       <LoginForm type='signup'/>
@@ -8,4 +8,4 @@ const signup = () => {
   )
 }
 
-export default signup
+export default Signup
