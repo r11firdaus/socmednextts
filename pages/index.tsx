@@ -56,7 +56,7 @@ export default function Home(): JSX.Element {
     const postText = document.getElementById('postText') as HTMLInputElement
     if (postText.value.trim() !== '') {
       const body = {
-        content: postText.value,
+        content: encodeURIComponent(postText.value),
         img_url: '',
         user_id: await getData('user_id', 0)
       }

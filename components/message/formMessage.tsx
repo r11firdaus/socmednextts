@@ -14,7 +14,7 @@ const FormMessage = (props: { messages: MessagesTypes[], unique_id: string }): J
       body: {
         content: postText.value,
         user_id,
-        unique_id: props.unique_id,
+        unique_id: encodeURIComponent(props.unique_id),
         receiver_id
       }
     })

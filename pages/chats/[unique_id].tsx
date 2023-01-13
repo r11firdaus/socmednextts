@@ -83,7 +83,7 @@ const ChatDetail = (props: Props): JSX.Element => {
       const body = {
         content: postText.value,
         user_id: props.user_id,
-        unique_id,
+        unique_id: encodeURIComponent(unique_id),
         receiver_id
       }
       const save = await postAPI({path: 'messages', body})

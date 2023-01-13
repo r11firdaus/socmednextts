@@ -13,7 +13,7 @@ const LoginForm = (props) => {
 
     const email = document.getElementById('email').value
     const password = document.getElementById('password').value
-    const body = { email, password }
+    const body = { email, password: encodeURIComponent(password) }
 
     const res = await postAPI({ path: `auth/${ props.type === 'login' ? 'login' : 'signup' }`, body })
 
