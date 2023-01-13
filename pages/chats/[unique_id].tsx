@@ -26,7 +26,7 @@ export const getServerSideProps: GetServerSideProps = async (ctx) => {
   if (chkId.length < 1 || !token) ctx.res.writeHead(302, {location: '/'}).end()
 
   return {
-    props: { unique_id, user_id, token, opponentId }
+    props: { unique_id: encodeURIComponent(unique_id), user_id, token, opponentId }
   }
 }
 
@@ -37,7 +37,7 @@ interface Props extends UserTypes {
 
 const ChatDetail = (props: Props): JSX.Element => {
   const [messages, setmessages] = useState<MessagesTypes[]>([])
-  const [unique_id, setunique_id] = useState(props.unique_id)
+  const [unique_id, setunique_id] = useState(decodeURIComponent(props.unique_id))
   const [opponent, setopponent] = useState('')
   const disableBottomNav = useNavStore((state) => state.ShowBottomFalse)
   const disableTopNav = useNavStore((state) => state.ShowTopFalse)

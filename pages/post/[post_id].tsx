@@ -44,7 +44,7 @@ const PostDetail = (props: { data: PostsTypes }): JSX.Element => {
     const postText = document.getElementById('postText') as HTMLInputElement
     if (postText.value.trim() !== '') {
       const body = {
-        content: encodeURIComponent(postText.value),
+        content: postText.value,
         user_id: await getData('user_id', 0),
         post_id: data.id
       }
