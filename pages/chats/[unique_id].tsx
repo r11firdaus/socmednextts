@@ -19,14 +19,14 @@ export const getServerSideProps: GetServerSideProps = async (ctx) => {
   const user_id = getData('user_id', 0, ctx)
   const token = getData('token', 0, ctx)
 
-  const pisahIdUser = unique_id.split('+')
+  const pisahIdUser = unique_id.split('_')
   let chkId = []
   pisahIdUser.map(id => user_id == parseInt(id) && chkId.push(id))
   const opponentId = pisahIdUser.filter(e => e != user_id)[0]
   if (chkId.length < 1 || !token) ctx.res.writeHead(302, {location: '/'}).end()
 
   return {
-    props: { unique_id: encodeURIComponent(unique_id), user_id, token, opponentId }
+    props: { unique_id, user_id, token, opponentId }
   }
 }
 
@@ -79,7 +79,7 @@ const ChatDetail = (props: Props): JSX.Element => {
     const postText = document.getElementById('msg-input') as HTMLInputElement
     
     if (postText.value.trim() !== '') {
-      let receiver_id = unique_id.split('+').filter((e: string) => e != `${props.user_id}`)[0]
+      let receiver_id = unique_id.split('_').filter((e: string) => e != `${props.user_id}`)[0]
       const body = {
         content: postText.value,
         user_id: props.user_id,
@@ -104,8 +104,8 @@ const ChatDetail = (props: Props): JSX.Element => {
     data?.map(async (e: { [key: string]: MessagesTypes[] }) => {
       if (e[unique_id]) msg = processMsg(e[unique_id].reverse())
       else {
-        const splitUniqueId = unique_id.split('+')
-        const reverseUniqueId = `${splitUniqueId[1]}+${splitUniqueId[0]}`
+        const splitUniqueId = unique_id.split('_')
+        const reverseUniqueId = `${splitUniqueId[1]}_${splitUniqueId[0]}`
         if (e[reverseUniqueId]) {
           setunique_id(reverseUniqueId)
           msg = processMsg(e[reverseUniqueId].reverse())
