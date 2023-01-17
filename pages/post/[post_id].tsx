@@ -6,6 +6,7 @@ import appendComment from "../../components/comment/appendComment"
 import setDateTime from '../../lib/setDateTime'
 import { GetServerSideProps } from 'next'
 import PostsTypes from '../../types/posts'
+import fetch from 'node-fetch'
 
 const CommentsCard = dynamic(import("../../components/commentsCard"), {ssr: false})
 
@@ -19,7 +20,8 @@ export const getServerSideProps: GetServerSideProps = async (ctx) => {
       'Content-Type': 'application/json'
     }
   })
-  const data = await res.json()
+  const data: any = await res.json()
+  console.log(data)
 
   return {props: {data: data.data}}
 }
