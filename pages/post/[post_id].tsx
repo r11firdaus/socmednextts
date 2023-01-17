@@ -14,7 +14,7 @@ export const getServerSideProps: GetServerSideProps = async (ctx) => {
   const { query } = ctx
   const post_id = query.post_id
 
-  const res = await fetch(`http://localhost:4000/api/v1/posts/${post_id}`, {
+  const res = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/posts/${post_id}`, {
     method: 'GET',
     headers: {
       'Content-Type': 'application/json'
