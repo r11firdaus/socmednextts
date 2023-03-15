@@ -1,12 +1,12 @@
 import Link from "next/link"
-import { useEffect } from "react"
+import { Fragment, useEffect } from "react"
 import setDateTime from "../lib/setDateTime"
 import CommentsChannel, { commentApp } from "../lib/websocket/comments_channel"
 
 const CommentsCard = (props) => {
   useEffect(() => {
     props.user_id && props.token && CommentsChannel(props.post_id)
-    return () => commentApp.unsubscribe()
+    return () => commentApp && commentApp.unsubscribe()
   }, [])
   
   return (
@@ -15,7 +15,7 @@ const CommentsCard = (props) => {
         <div className="card border-secondary bg-dark" key={e.id}>
           <div className="card-body text-light">
             <Link href={`/profile/${e.email}`}><strong>{e.email}</strong></Link>
-            <p>{e.content}</p>
+            <span dangerouslySetInnerHTML={{ __html: e.content }} />
             <small>{setDateTime(e.created_at)}</small>
           </div>
         </div>

@@ -12,7 +12,7 @@ const Posts = (props: { posts: PostsTypes[] }): JSX.Element => {
         <div className="card-body">
           <Link href={`/profile/${e.email}`}><strong>{e.email}</strong></Link>
           <span className="px-2 py-2"><small className="text-secondary mr-3">{setDateTime(e.created_at)}</small></span>
-          <p>{e.content}</p>
+          <span dangerouslySetInnerHTML={{ __html: e.content }} />
           <div className="position-absolute bottom-0 end-0 px-2 py-2"><Link href={`/post/${e.id}`}>Comments</Link></div>
         </div>
       </div>
