@@ -29,7 +29,7 @@ export default function App({ Component, pageProps }: AppProps) {
         loading ? <div className="h-100"><Spinner types='ring' /></div> :
         <>
           <Navbar />
-          <Component {...pageProps} />
+          <div className='main-container'><Component {...pageProps} /></div>
         </>
       }
     </>

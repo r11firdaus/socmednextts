@@ -21,7 +21,6 @@ export const getServerSideProps: GetServerSideProps = async (ctx) => {
     }
   })
   const data: any = await res.json()
-  console.log(data)
 
   return {props: {data: data.data}}
 }
@@ -51,7 +50,7 @@ const PostDetail = (props: { data: PostsTypes }): JSX.Element => {
       <div className="pl-3 py-3"><h5>Comments</h5></div>
       
       {<CommentsCard comments={comments} post_id={data.id} user_id={user_id} token={token} />}
-      {user_id && token && <TextEditor data={props.data} path={'comments'} />}
+      {user_id && token && <div className='comment-form-container'><TextEditor data={props.data} path={'comments'} /></div>}
     </div>
   )
 }

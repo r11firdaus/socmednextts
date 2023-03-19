@@ -58,7 +58,7 @@ const TextEditor = (props) => {
 
   return (<>
     {alert.show && <Alert data={alert} />}
-    <div className="row my-3">
+    <div className="row my-3 bg-dark">
       <div className="col-8">
         <textarea className="form-control" placeholder="Just write" id="postText" />
       </div>

@@ -114,3 +114,21 @@ a {
   blockquote p {
     display: inline;
   }
+
+  .comment-form-container {
+    padding-bottom: 1.25rem;
+    position: fixed;
+    bottom: 7.8rem;
+    left: 0;
+    right: 0;
+    height: 3.2rem;
+    box-sizing: border-box;
+  }
+
+  .ck-editor__editable_inline {
+    max-height: 55px;
+  }
+
+  .comment-container {
+    padding-bottom: 10rem;
+  }
